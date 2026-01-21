@@ -1,0 +1,6 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/WgConf/WgConf.csproj" />
+    <Project Path="src/WgConf.Tests/WgConf.Tests.csproj" />
+  </Folder>
+</Solution>
