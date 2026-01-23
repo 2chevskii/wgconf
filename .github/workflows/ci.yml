@@ -49,7 +49,7 @@ jobs:
           steps.gitversion.outputs.semVer }}
 
       - name: Validate code formatting
-        run: dotnet csharpier --check .
+        run: dotnet csharpier check .
 
       - name: Run tests with coverage
         run: |
