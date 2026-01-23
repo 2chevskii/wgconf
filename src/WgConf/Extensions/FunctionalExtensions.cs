@@ -1,6 +1,6 @@
 ﻿namespace WgConf.Extensions;
 
-internal static class FunctionalExtensions
+public static class FunctionalExtensions
 {
     public static void Let<T>(this T? self, Action<T> action)
         where T : class

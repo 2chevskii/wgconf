@@ -2,14 +2,9 @@
 
 namespace WgConf;
 
-public class WireguardConfigurationWriter : IDisposable, IAsyncDisposable
+public class WireguardConfigurationWriter(TextWriter textWriter) : IDisposable, IAsyncDisposable
 {
-    protected readonly TextWriter _textWriter;
-
-    public WireguardConfigurationWriter(TextWriter textWriter)
-    {
-        _textWriter = textWriter;
-    }
+    protected readonly TextWriter _textWriter = textWriter;
 
     public void Dispose()
     {
@@ -32,7 +27,7 @@ public class WireguardConfigurationWriter : IDisposable, IAsyncDisposable
         }
     }
 
-    private void WriteInterface(WireguardConfiguration configuration)
+    protected virtual void WriteInterface(WireguardConfiguration configuration)
     {
         WriteSectionHeader("Interface");
         WriteProperty(nameof(WireguardConfiguration.PrivateKey), configuration.PrivateKey);
@@ -44,7 +39,7 @@ public class WireguardConfigurationWriter : IDisposable, IAsyncDisposable
         configuration.PostDown.Let(v => WriteProperty(nameof(WireguardConfiguration.PostDown), v));
     }
 
-    private void WritePeer(WireguardPeerConfiguration configuration)
+    protected virtual void WritePeer(WireguardPeerConfiguration configuration)
     {
         WriteSectionHeader("Peer");
         WriteProperty(nameof(WireguardPeerConfiguration.AllowedIPs), configuration.AllowedIPs);
@@ -105,7 +100,7 @@ public class WireguardConfigurationWriter : IDisposable, IAsyncDisposable
         _textWriter.WriteLine();
     }
 
-    private void WriteProperty(string name, Uri value)
+    private void WriteProperty(string name, WireguardEndpoint value)
     {
         WritePropertyNameAndSeparator(name);
         _textWriter.Write(value.ToString());

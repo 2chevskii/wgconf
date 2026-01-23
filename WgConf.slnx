@@ -1,6 +1,22 @@
 <Solution>
+  <Folder Name="/common/">
+    <File Path="Directory.Build.props" />
+    <File Path="Directory.Packages.props" />
+    <File Path="global.json" />
+  </Folder>
+  <Folder Name="/misc/">
+    <File Path=".editorconfig" />
+    <File Path=".gitattributes" />
+    <File Path=".gitignore" />
+    <File Path="CLAUDE.md" />
+    <File Path="dotnet-tools.json" />
+  </Folder>
   <Folder Name="/src/">
     <Project Path="src/WgConf/WgConf.csproj" />
-    <Project Path="src/WgConf.Tests/WgConf.Tests.csproj" />
+    <Project Path="src/WgConf.Amnezia/WgConf.Amnezia.csproj" />
+  </Folder>
+  <Folder Name="/test/">
+    <Project Path="test/WgConf.Tests/WgConf.Tests.csproj" />
+    <Project Path="test/WgConf.Amnezia.Tests/WgConf.Amnezia.Tests.csproj" />
   </Folder>
 </Solution>

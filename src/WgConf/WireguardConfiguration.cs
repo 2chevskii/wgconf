@@ -12,4 +12,57 @@ public class WireguardConfiguration
     public string? PostDown { get; set; }
 
     public List<WireguardPeerConfiguration> Peers { get; } = [];
+
+    public static WireguardConfiguration Parse(string text)
+    {
+        using var reader = new WireguardConfigurationReader(new StringReader(text));
+        return reader.Read();
+    }
+
+    public static bool TryParse(
+        string text,
+        out WireguardConfiguration? configuration,
+        out IReadOnlyList<ParseError> errors
+    )
+    {
+        using var reader = new WireguardConfigurationReader(new StringReader(text));
+        return reader.TryRead(out configuration, out errors);
+    }
+
+    public static WireguardConfiguration Load(string path)
+    {
+        using var reader = new WireguardConfigurationReader(new StreamReader(path));
+        return reader.Read();
+    }
+
+    public static async Task<WireguardConfiguration> LoadAsync(
+        string path,
+        CancellationToken cancellationToken = default
+    )
+    {
+        var text = await File.ReadAllTextAsync(path, cancellationToken);
+        return Parse(text);
+    }
+
+    public void Save(string path)
+    {
+        using var writer = new WireguardConfigurationWriter(new StreamWriter(path));
+        writer.Write(this);
+    }
+
+    public async Task SaveAsync(string path, CancellationToken cancellationToken = default)
+    {
+        await using var stream = new FileStream(
+            path,
+            FileMode.Create,
+            FileAccess.Write,
+            FileShare.None,
+            bufferSize: 4096,
+            useAsync: true
+        );
+        await using var streamWriter = new StreamWriter(stream);
+        await using var writer = new WireguardConfigurationWriter(streamWriter);
+        writer.Write(this);
+        await streamWriter.FlushAsync(cancellationToken);
+    }
 }

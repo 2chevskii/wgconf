@@ -171,7 +171,7 @@ public class WireguardConfigurationWriterTests
                     "xTIBA5rboUvnH4htodjb6e697QjLERt1NAB4mZqp8Dg="
                 ),
                 AllowedIPs = [CIDR.Parse("10.0.0.2/32")],
-                Endpoint = new Uri("udp://vpn.example.com:51820"),
+                Endpoint = WireguardEndpoint.Parse("vpn.example.com:51820"),
                 PresharedKey = Convert.FromBase64String(
                     "FpCyhws9cxwWoV4xELtfJvjJN+zQVRPISllRWgeopVE="
                 ),
@@ -191,7 +191,7 @@ public class WireguardConfigurationWriterTests
             AllowedIPs = 10.0.0.2/32
             PublicKey = xTIBA5rboUvnH4htodjb6e697QjLERt1NAB4mZqp8Dg=
             PresharedKey = FpCyhws9cxwWoV4xELtfJvjJN+zQVRPISllRWgeopVE=
-            Endpoint = udp://vpn.example.com:51820/
+            Endpoint = vpn.example.com:51820
             PersistedKeepalive = 25
 
 
@@ -227,7 +227,7 @@ public class WireguardConfigurationWriterTests
                     "TrMvSoP4jYQlY6RIzBgbssQqY3vxI2Pi+y71lOWWXX0="
                 ),
                 AllowedIPs = [CIDR.Parse("10.0.0.3/32")],
-                Endpoint = new Uri("udp://peer2.example.com:51820"),
+                Endpoint = WireguardEndpoint.Parse("peer2.example.com:51820"),
                 PersistedKeepalive = 30,
             }
         );
@@ -247,7 +247,7 @@ public class WireguardConfigurationWriterTests
             [Peer]
             AllowedIPs = 10.0.0.3/32
             PublicKey = TrMvSoP4jYQlY6RIzBgbssQqY3vxI2Pi+y71lOWWXX0=
-            Endpoint = udp://peer2.example.com:51820/
+            Endpoint = peer2.example.com:51820
             PersistedKeepalive = 30
 
 

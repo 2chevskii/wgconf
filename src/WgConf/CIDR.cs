@@ -22,7 +22,7 @@ public readonly struct CIDR
         }
 
         var addressPart = s[..slashIndex];
-        var prefixPart = s[(slashIndex + 1)..];
+        var prefixPart = s[slashIndex..][1..];
 
         if (!IPAddress.TryParse(addressPart, out var address))
         {
