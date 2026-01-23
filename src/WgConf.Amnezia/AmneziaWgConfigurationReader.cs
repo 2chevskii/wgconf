@@ -253,7 +253,7 @@ public class AmneziaWgConfigurationReader(TextReader textReader)
         return (AmneziaWgConfiguration)await base.ReadAsync(cancellationToken);
     }
 
-    public new bool TryRead(
+    public bool TryRead(
         out AmneziaWgConfiguration? configuration,
         out IReadOnlyList<ParseError> errors
     )

@@ -1,7 +1,25 @@
 <Project Sdk="Microsoft.NET.Sdk">
-  <PropertyGroup></PropertyGroup>
+  <PropertyGroup>
+    <PackageId>WgConf.Amnezia</PackageId>
+    <Description>Extension for WgConf adding support for AmneziaWG-specific obfuscation parameters. Includes reader and writer for AmneziaWG configuration files.</Description>
+  </PropertyGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\WgConf\WgConf.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="GitVersion.MsBuild">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.SourceLink.GitHub">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="README.md" Pack="true" PackagePath="\" />
   </ItemGroup>
 </Project>

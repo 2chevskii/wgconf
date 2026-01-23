@@ -203,8 +203,8 @@ public class AmneziaWgConfigurationWriterTests
         Assert.Equal(original.Jc, parsed.Jc);
         Assert.Equal(original.Jmin, parsed.Jmin);
         Assert.Equal(original.I1, parsed.I1);
-        Assert.Equal(original.H1.Value.Start, parsed.H1.Value.Start);
-        Assert.Equal(original.H1.Value.End, parsed.H1.Value.End);
+        Assert.Equal(original.H1!.Value.Start, parsed.H1!.Value.Start);
+        Assert.Equal(original.H1!.Value.End, parsed.H1!.Value.End);
         Assert.Single(parsed.Peers);
     }
 

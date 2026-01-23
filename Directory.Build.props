@@ -3,5 +3,49 @@
     <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <LangVersion>latest</LangVersion>
+  </PropertyGroup>
+
+  <!-- Package metadata -->
+  <PropertyGroup>
+    <Authors>2CHEVSKII</Authors>
+    <Copyright>Copyright (c) $([System.DateTime]::Now.Year) 2CHEVSKII</Copyright>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageProjectUrl>https://github.com/dvchevskii/wgconf</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/dvchevskii/wgconf</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageTags>wireguard;wg;amneziawg;configuration;parser;vpn</PackageTags>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+  </PropertyGroup>
+
+  <!-- Versioning (GitVersion will inject these) -->
+  <PropertyGroup>
+    <Version>0.1.0</Version>
+    <AssemblyVersion>0.1.0.0</AssemblyVersion>
+    <FileVersion>0.1.0.0</FileVersion>
+    <InformationalVersion>0.1.0</InformationalVersion>
+  </PropertyGroup>
+
+  <!-- SourceLink for debugging support -->
+  <PropertyGroup>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+  </PropertyGroup>
+
+  <!-- Deterministic builds -->
+  <PropertyGroup>
+    <ContinuousIntegrationBuild Condition="'$(GITHUB_ACTIONS)' == 'true'"
+      >true</ContinuousIntegrationBuild
+    >
+    <Deterministic>true</Deterministic>
+  </PropertyGroup>
+
+  <!-- Analyzer configuration -->
+  <PropertyGroup>
+    <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
 </Project>
