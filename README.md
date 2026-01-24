@@ -1,6 +1,6 @@
 # WgConf
 
-[![CI](https://github.com/dvchevskii/wgconf/actions/workflows/ci.yml/badge.svg)](https://github.com/dvchevskii/wgconf/actions/workflows/ci.yml)
+[![CI/CD](https://github.com/2chevskii/wgconf/actions/workflows/ci.yml/badge.svg)](https://github.com/2chevskii/wgconf/actions/workflows/ci.yml)
 [![NuGet](https://img.shields.io/nuget/v/WgConf.svg)](https://www.nuget.org/packages/WgConf/)
 [![NuGet Downloads](https://img.shields.io/nuget/dt/WgConf.svg)](https://www.nuget.org/packages/WgConf/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
@@ -131,6 +131,7 @@ config.Save("awg0.conf");
 ### AmneziaWgConfiguration (Extends WireguardConfiguration)
 
 Adds 20 optional obfuscation parameters:
+
 - **Integers** (11): Jc, Jmin, Jmax, S1, S2, S3, S4, J1, J2, J3, Itime
 - **Strings** (5): I1, I2, I3, I4, I5
 - **Integer Ranges** (4): H1, H2, H3, H4 (format: "start-end")
@@ -138,6 +139,7 @@ Adds 20 optional obfuscation parameters:
 ## Testing
 
 The library includes comprehensive test coverage (117 tests):
+
 - WgConf.Tests: 81 tests
 - WgConf.Amnezia.Tests: 36 tests
 
