@@ -1,5 +1,5 @@
 using System.Net;
-using System.Net.Sockets;
+using WgConf.Extensions;
 
 namespace WgConf;
 
@@ -8,45 +8,66 @@ public readonly struct CIDR
     public required IPAddress Address { get; init; }
     public required int PrefixLength { get; init; }
 
-    public static CIDR Parse(string s)
+    public static implicit operator CIDR(ReadOnlySpan<char> input) => Parse(input);
+
+    public static bool TryParse(ReadOnlySpan<char> input, out CIDR result, out Exception? exception)
     {
-        return Parse(s.AsSpan());
+        result = default;
+        exception = null;
+
+        ParseInternal(input, ref result, ref exception);
+        return exception == null;
     }
 
-    public static CIDR Parse(ReadOnlySpan<char> s)
+    public static CIDR Parse(ReadOnlySpan<char> input)
     {
-        int slashIndex = s.IndexOf('/');
+        CIDR result = default;
+        Exception? exception = null;
+
+        ParseInternal(input, ref result, ref exception);
+        return exception != null ? throw exception : result;
+    }
+
+    private static void ParseInternal(
+        ReadOnlySpan<char> input,
+        ref CIDR result,
+        ref Exception? exception
+    )
+    {
+        int slashIndex = input.IndexOf('/');
         if (slashIndex == -1)
         {
-            throw new FormatException("CIDR notation must contain '/' separator");
+            exception = new FormatException("CIDR notation must contain '/' separator");
+            return;
         }
 
-        var addressPart = s[..slashIndex];
-        var prefixPart = s[slashIndex..][1..];
+        var addressPart = input[..slashIndex];
+        var prefixPart = input[slashIndex..][1..];
 
         if (!IPAddress.TryParse(addressPart, out var address))
         {
-            throw new FormatException("Invalid IP address in CIDR notation");
+            exception = new FormatException("Invalid IP address in CIDR notation");
+            return;
         }
 
         if (!int.TryParse(prefixPart, out var prefixLength))
         {
-            throw new FormatException("Invalid prefix length in CIDR notation");
-        }
-
-        int maxPrefixLength = address.AddressFamily == AddressFamily.InterNetwork ? 32 : 128;
-        if (prefixLength < 0 || prefixLength > maxPrefixLength)
-        {
-            throw new FormatException(
-                $"Prefix length must be between 0 and {maxPrefixLength} for {address.AddressFamily}"
+            exception = new FormatException(
+                "Invalid prefix length in CIDR notation: prefix length must be a non-negative integer"
             );
+            return;
         }
 
-        return new CIDR { Address = address, PrefixLength = prefixLength };
+        if (prefixLength < 0 || prefixLength > address.AddressFamily.MaxPrefixLength)
+        {
+            exception = new FormatException(
+                $"Prefix length must be between 0 and {address.AddressFamily.MaxPrefixLength} for {address.AddressFamily.FriendlyName}"
+            );
+            return;
+        }
+
+        result = new CIDR { Address = address, PrefixLength = prefixLength };
     }
 
-    public override string ToString()
-    {
-        return $"{Address}/{PrefixLength}";
-    }
+    public override string ToString() => $"{Address}/{PrefixLength}";
 }
