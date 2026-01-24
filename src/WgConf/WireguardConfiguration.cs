@@ -2,8 +2,28 @@
 
 public class WireguardConfiguration
 {
-    public required byte[] PrivateKey { get; set; }
-    public required int ListenPort { get; set; }
+    public required byte[] PrivateKey
+    {
+        get;
+        set =>
+            field =
+                value.Length != Constants.KEY_LENGTH_BYTES
+                    ? throw new ArgumentException("Private key must be of 256 bit in size")
+                    : value;
+    }
+
+    public required ushort ListenPort
+    {
+        get;
+        set =>
+            field =
+                value < Constants.PORT_MIN || value > Constants.PORT_MAX
+                    ? throw new ArgumentException(
+                        $"ListenPort value should be between {Constants.PORT_MIN} and {Constants.PORT_MAX}"
+                    )
+                    : value;
+    }
+
     public required CIDR Address { get; set; }
 
     public string? PreUp { get; set; }
@@ -64,5 +84,12 @@ public class WireguardConfiguration
         await using var writer = new WireguardConfigurationWriter(streamWriter);
         writer.Write(this);
         await streamWriter.FlushAsync(cancellationToken);
+    }
+
+    internal static class Constants
+    {
+        public const byte KEY_LENGTH_BYTES = 32;
+        public const ushort PORT_MIN = 1;
+        public const ushort PORT_MAX = ushort.MaxValue;
     }
 }

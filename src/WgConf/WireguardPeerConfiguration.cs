@@ -1,8 +1,8 @@
 namespace WgConf;
 
-public class WireguardPeerConfiguration
+public sealed class WireguardPeerConfiguration
 {
-    public required CIDR[] AllowedIPs { get; set; }
+    public List<CIDR> AllowedIPs { get; set; } = [];
     public WireguardEndpoint? Endpoint { get; set; }
 
     public required byte[] PublicKey { get; set; }

@@ -77,8 +77,8 @@ public class AmneziaWgConfigurationWriterTests
             PrivateKey = Convert.FromBase64String("YAnz5TF+lXXJte14tji3zlMNftTLq5yJTfxLUcv7hag="),
             ListenPort = 51820,
             Address = CIDR.Parse("10.0.0.1/24"),
-            H1 = new IntegerRange { Start = 25, End = 30 },
-            H2 = new IntegerRange { Start = 100, End = 200 },
+            H1 = new HeaderValue(25ul, 30ul),
+            H2 = new HeaderValue(100ul, 200ul),
         };
 
         var output = WriteToString(config);
@@ -95,8 +95,8 @@ public class AmneziaWgConfigurationWriterTests
             PrivateKey = Convert.FromBase64String("YAnz5TF+lXXJte14tji3zlMNftTLq5yJTfxLUcv7hag="),
             ListenPort = 51820,
             Address = CIDR.Parse("10.0.0.1/24"),
-            H1 = new IntegerRange { Start = 25, End = null },
-            H2 = new IntegerRange { Start = 100, End = null },
+            H1 = new HeaderValue(25ul),
+            H2 = new HeaderValue(100ul),
         };
 
         var output = WriteToString(config);
@@ -115,10 +115,10 @@ public class AmneziaWgConfigurationWriterTests
             PrivateKey = Convert.FromBase64String("YAnz5TF+lXXJte14tji3zlMNftTLq5yJTfxLUcv7hag="),
             ListenPort = 51820,
             Address = CIDR.Parse("10.0.0.1/24"),
-            H1 = new IntegerRange { Start = 25, End = null },
-            H2 = new IntegerRange { Start = 100, End = 200 },
-            H3 = new IntegerRange { Start = 5, End = null },
-            H4 = new IntegerRange { Start = 1000, End = 2000 },
+            H1 = new HeaderValue(25ul),
+            H2 = new HeaderValue(100ul, 200ul),
+            H3 = new HeaderValue(5ul),
+            H4 = new HeaderValue(1000ul, 2000ul),
         };
 
         var output = WriteToString(config);
@@ -153,10 +153,10 @@ public class AmneziaWgConfigurationWriterTests
             I3 = "val3",
             I4 = "val4",
             I5 = "val5",
-            H1 = new IntegerRange { Start = 25, End = 30 },
-            H2 = new IntegerRange { Start = 100, End = 200 },
-            H3 = new IntegerRange { Start = 5, End = 10 },
-            H4 = new IntegerRange { Start = 1000, End = 2000 },
+            H1 = new HeaderValue(25ul, 30ul),
+            H2 = new HeaderValue(100ul, 200ul),
+            H3 = new HeaderValue(5ul, 10ul),
+            H4 = new HeaderValue(1000ul, 2000ul),
         };
 
         var output = WriteToString(config);
@@ -225,7 +225,7 @@ public class AmneziaWgConfigurationWriterTests
             Jc = 5,
             Jmin = 20,
             I1 = "test",
-            H1 = new IntegerRange { Start = 25, End = 30 },
+            H1 = new HeaderValue(25ul, 30ul),
         };
         original.Peers.Add(
             new WireguardPeerConfiguration

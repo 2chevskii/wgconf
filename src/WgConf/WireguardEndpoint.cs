@@ -7,25 +7,49 @@ public readonly struct WireguardEndpoint
     public required string Host { get; init; }
     public required int Port { get; init; }
 
-    public static WireguardEndpoint Parse(string s)
+    public static implicit operator WireguardEndpoint(ReadOnlySpan<char> input)
     {
-        return Parse(s.AsSpan());
+        return Parse(input);
     }
 
-    public static WireguardEndpoint Parse(ReadOnlySpan<char> s)
+    public static bool TryParse(ReadOnlySpan<char> input, out WireguardEndpoint result, out Exception? exception)
     {
-        var lastColonIndex = s.LastIndexOf(':');
+        result = default;
+        exception = null;
+
+        ParseInternal(input, ref result, ref exception);
+        return exception == null;
+    }
+
+    public static WireguardEndpoint Parse(ReadOnlySpan<char> input)
+    {
+        WireguardEndpoint result = default;
+        Exception? exception = null;
+
+        ParseInternal(input, ref result, ref exception);
+        return exception != null ? throw exception : result;
+    }
+
+    private static void ParseInternal(
+        ReadOnlySpan<char> input,
+        ref WireguardEndpoint result,
+        ref Exception? exception
+    )
+    {
+        var lastColonIndex = input.LastIndexOf(':');
         if (lastColonIndex == -1)
         {
-            throw new FormatException("Endpoint must be in format 'host:port'");
+            exception = new FormatException("Endpoint must be in format 'host:port'");
+            return;
         }
 
-        var hostPart = s[..lastColonIndex];
-        var portPart = s[(lastColonIndex + 1)..];
+        var hostPart = input[..lastColonIndex];
+        var portPart = input[(lastColonIndex + 1)..];
 
         if (hostPart.Length == 0)
         {
-            throw new FormatException("Endpoint host cannot be empty");
+            exception = new FormatException("Endpoint host cannot be empty");
+            return;
         }
 
         // Handle IPv6 addresses in brackets: [::1]:51820
@@ -38,7 +62,8 @@ public readonly struct WireguardEndpoint
                 || ipv6.AddressFamily != System.Net.Sockets.AddressFamily.InterNetworkV6
             )
             {
-                throw new FormatException("Invalid IPv6 address in endpoint");
+                exception = new FormatException("Invalid IPv6 address in endpoint");
+                return;
             }
         }
         else
@@ -48,29 +73,17 @@ public readonly struct WireguardEndpoint
 
         if (!int.TryParse(portPart, out var port))
         {
-            throw new FormatException("Invalid port number in endpoint");
+            exception = new FormatException("Invalid port number in endpoint");
+            return;
         }
 
         if (port < 1 || port > 65535)
         {
-            throw new FormatException($"Port must be between 1 and 65535, got {port}");
+            exception = new FormatException($"Port must be between 1 and 65535, got {port}");
+            return;
         }
 
-        return new WireguardEndpoint { Host = host, Port = port };
-    }
-
-    public static bool TryParse(string s, out WireguardEndpoint result)
-    {
-        try
-        {
-            result = Parse(s);
-            return true;
-        }
-        catch (FormatException)
-        {
-            result = default;
-            return false;
-        }
+        result = new WireguardEndpoint { Host = host, Port = port };
     }
 
     public override string ToString()

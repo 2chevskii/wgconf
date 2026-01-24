@@ -66,9 +66,10 @@ public class WireguardEndpointTests
     [Fact]
     public void TryParse_ValidEndpoint_ReturnsTrue()
     {
-        var success = WireguardEndpoint.TryParse("example.com:51820", out var endpoint);
+        var success = WireguardEndpoint.TryParse("example.com:51820", out var endpoint, out var exception);
 
         Assert.True(success);
+        Assert.Null(exception);
         Assert.Equal("example.com", endpoint.Host);
         Assert.Equal(51820, endpoint.Port);
     }
@@ -76,9 +77,10 @@ public class WireguardEndpointTests
     [Fact]
     public void TryParse_InvalidEndpoint_ReturnsFalse()
     {
-        var success = WireguardEndpoint.TryParse("invalid", out var endpoint);
+        var success = WireguardEndpoint.TryParse("invalid", out var endpoint, out var exception);
 
         Assert.False(success);
+        Assert.NotNull(exception);
         Assert.Equal(default, endpoint);
     }
 

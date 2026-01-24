@@ -84,13 +84,13 @@ public class WireguardConfigurationWriter(TextWriter textWriter) : IDisposable, 
         _textWriter.WriteLine();
     }
 
-    private void WriteProperty(string name, CIDR[] value)
+    private void WriteProperty(string name, List<CIDR> value)
     {
         WritePropertyNameAndSeparator(name);
-        for (var i = 0; i < value.Length; i++)
+        for (var i = 0; i < value.Count; i++)
         {
             _textWriter.Write(value[i].ToString());
-            if (i != value.Length - 1)
+            if (i != value.Count - 1)
             {
                 _textWriter.Write(',');
                 _textWriter.Write(' ');

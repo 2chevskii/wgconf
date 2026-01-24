@@ -5,7 +5,7 @@
 [![NuGet Downloads](https://img.shields.io/nuget/dt/WgConf.svg)](https://www.nuget.org/packages/WgConf/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-A .NET library for reading and writing WireGuard configuration files with strongly-typed models and comprehensive error handling.
+A .NET library for reading and writing **WireGuard** and **AmneziaWG** configuration files with strongly-typed models and comprehensive error handling.
 
 ## Features
 

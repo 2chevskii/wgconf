@@ -4,10 +4,6 @@ namespace WgConf;
 
 public class WireguardConfigurationReader(TextReader textReader) : IDisposable, IAsyncDisposable
 {
-    private const int WireguardKeyLength = 32;
-    private const int MinPort = 1;
-    private const int MaxPort = 65535;
-
     protected readonly TextReader _textReader = textReader;
 
     public void Dispose()
@@ -348,7 +344,7 @@ public class WireguardConfigurationReader(TextReader textReader) : IDisposable, 
 
             if (peerProps.TryGetValue("Endpoint", out var endpoint))
             {
-                if (WireguardEndpoint.TryParse(endpoint, out var parsedEndpoint))
+                if (WireguardEndpoint.TryParse(endpoint, out var parsedEndpoint, out var exception))
                 {
                     peer.Endpoint = parsedEndpoint;
                 }
@@ -357,7 +353,7 @@ public class WireguardConfigurationReader(TextReader textReader) : IDisposable, 
                     errors.Add(
                         new ParseError(
                             0,
-                            $"Invalid Endpoint format: {endpoint}. Expected 'host:port' format."
+                            $"Invalid Endpoint format: {endpoint}. {exception?.Message ?? "Expected 'host:port' format."}"
                         )
                     );
                 }
@@ -368,12 +364,12 @@ public class WireguardConfigurationReader(TextReader textReader) : IDisposable, 
                 try
                 {
                     var key = Convert.FromBase64String(presharedKey);
-                    if (key.Length != WireguardKeyLength)
+                    if (key.Length != WireguardConfiguration.Constants.KEY_LENGTH_BYTES)
                     {
                         errors.Add(
                             new ParseError(
                                 0,
-                                $"Invalid PresharedKey length. Expected {WireguardKeyLength} bytes, got {key.Length}."
+                                $"Invalid PresharedKey length. Expected {WireguardConfiguration.Constants.KEY_LENGTH_BYTES} bytes, got {key.Length}."
                             )
                         );
                     }
@@ -427,20 +423,21 @@ public class WireguardConfigurationReader(TextReader textReader) : IDisposable, 
             errors.Add(
                 new ParseError(0, "Missing required property 'PrivateKey' in [Interface] section.")
             );
-            return Array.Empty<byte>();
+            return new byte[WireguardConfiguration.Constants.KEY_LENGTH_BYTES];
         }
 
         try
         {
             var key = Convert.FromBase64String(value);
-            if (key.Length != WireguardKeyLength)
+            if (key.Length != WireguardConfiguration.Constants.KEY_LENGTH_BYTES)
             {
                 errors.Add(
                     new ParseError(
                         0,
-                        $"Invalid PrivateKey length. Expected {WireguardKeyLength} bytes, got {key.Length}."
+                        $"Invalid PrivateKey length. Expected {WireguardConfiguration.Constants.KEY_LENGTH_BYTES} bytes, got {key.Length}."
                     )
                 );
+                return new byte[WireguardConfiguration.Constants.KEY_LENGTH_BYTES];
             }
 
             return key;
@@ -450,11 +447,11 @@ public class WireguardConfigurationReader(TextReader textReader) : IDisposable, 
             errors.Add(
                 new ParseError(0, "Invalid PrivateKey format. Expected Base64 encoded string.")
             );
-            return Array.Empty<byte>();
+            return new byte[WireguardConfiguration.Constants.KEY_LENGTH_BYTES];
         }
     }
 
-    private int ParseListenPort(
+    private ushort ParseListenPort(
         Dictionary<string, string> props,
         List<string> allLines,
         List<ParseError> errors
@@ -465,26 +462,30 @@ public class WireguardConfigurationReader(TextReader textReader) : IDisposable, 
             errors.Add(
                 new ParseError(0, "Missing required property 'ListenPort' in [Interface] section.")
             );
-            return 0;
+            return WireguardConfiguration.Constants.PORT_MIN;
         }
 
         if (int.TryParse(value, out var port))
         {
-            if (port < MinPort || port > MaxPort)
+            if (
+                port < WireguardConfiguration.Constants.PORT_MIN
+                || port > WireguardConfiguration.Constants.PORT_MAX
+            )
             {
                 errors.Add(
                     new ParseError(
                         0,
-                        $"Invalid ListenPort value. Must be between {MinPort} and {MaxPort}, got {port}."
+                        $"Invalid ListenPort value. Must be between {WireguardConfiguration.Constants.PORT_MIN} and {WireguardConfiguration.Constants.PORT_MAX}, got {port}."
                     )
                 );
+                return WireguardConfiguration.Constants.PORT_MIN;
             }
 
-            return port;
+            return (ushort)port;
         }
 
         errors.Add(new ParseError(0, "Invalid ListenPort format. Expected integer value."));
-        return 0;
+        return WireguardConfiguration.Constants.PORT_MIN;
     }
 
     private CIDR ParseAddress(
@@ -529,12 +530,12 @@ public class WireguardConfigurationReader(TextReader textReader) : IDisposable, 
         try
         {
             var key = Convert.FromBase64String(value);
-            if (key.Length != WireguardKeyLength)
+            if (key.Length != WireguardConfiguration.Constants.KEY_LENGTH_BYTES)
             {
                 errors.Add(
                     new ParseError(
                         0,
-                        $"Invalid PublicKey length. Expected {WireguardKeyLength} bytes, got {key.Length}."
+                        $"Invalid PublicKey length. Expected {WireguardConfiguration.Constants.KEY_LENGTH_BYTES} bytes, got {key.Length}."
                     )
                 );
             }
@@ -550,7 +551,7 @@ public class WireguardConfigurationReader(TextReader textReader) : IDisposable, 
         }
     }
 
-    private CIDR[] ParseAllowedIPs(
+    private List<CIDR> ParseAllowedIPs(
         Dictionary<string, string> props,
         List<string> allLines,
         List<ParseError> errors
@@ -561,7 +562,7 @@ public class WireguardConfigurationReader(TextReader textReader) : IDisposable, 
             errors.Add(
                 new ParseError(0, "Missing required property 'AllowedIPs' in [Peer] section.")
             );
-            return Array.Empty<CIDR>();
+            return [];
         }
 
         var cidrs = new List<CIDR>();
@@ -585,7 +586,7 @@ public class WireguardConfigurationReader(TextReader textReader) : IDisposable, 
             }
         }
 
-        return cidrs.ToArray();
+        return cidrs.ToList();
     }
 
     private static string StripComments(string line)

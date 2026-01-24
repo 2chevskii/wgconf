@@ -11,6 +11,9 @@
     <File Path="CLAUDE.md" />
     <File Path="dotnet-tools.json" />
   </Folder>
+  <Folder Name="/samples/">
+    <Project Path="samples/WgConf.SampleApp/WgConf.SampleApp.csproj" />
+  </Folder>
   <Folder Name="/src/">
     <Project Path="src/WgConf/WgConf.csproj" />
     <Project Path="src/WgConf.Amnezia/WgConf.Amnezia.csproj" />

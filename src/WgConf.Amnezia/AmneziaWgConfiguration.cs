@@ -20,10 +20,10 @@ public class AmneziaWgConfiguration : WireguardConfiguration
     public string? I4 { get; set; }
     public string? I5 { get; set; }
 
-    public IntegerRange? H1 { get; set; }
-    public IntegerRange? H2 { get; set; }
-    public IntegerRange? H3 { get; set; }
-    public IntegerRange? H4 { get; set; }
+    public HeaderValue? H1 { get; set; }
+    public HeaderValue? H2 { get; set; }
+    public HeaderValue? H3 { get; set; }
+    public HeaderValue? H4 { get; set; }
 
     public static new AmneziaWgConfiguration Parse(string text)
     {

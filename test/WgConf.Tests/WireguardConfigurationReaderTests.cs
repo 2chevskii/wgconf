@@ -90,7 +90,7 @@ public class WireguardConfigurationReaderTests
 
         Assert.Single(config.Peers);
         var peer = config.Peers[0];
-        Assert.Equal(3, peer.AllowedIPs.Length);
+        Assert.Equal(3, peer.AllowedIPs.Count);
         Assert.Equal("10.0.0.2/32", peer.AllowedIPs[0].ToString());
         Assert.Equal("10.0.0.3/32", peer.AllowedIPs[1].ToString());
         Assert.Equal("192.168.1.0/24", peer.AllowedIPs[2].ToString());

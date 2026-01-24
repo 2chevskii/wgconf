@@ -192,7 +192,7 @@ public class AmneziaWgConfigurationReader(TextReader textReader)
 
         if (
             interfaceProps.TryGetValue("H1", out var h1)
-            && IntegerRange.TryParse(h1, out var h1Value)
+            && HeaderValue.TryParse(h1, out var h1Value)
         )
         {
             amneziaConfig.H1 = h1Value;
@@ -204,7 +204,7 @@ public class AmneziaWgConfigurationReader(TextReader textReader)
 
         if (
             interfaceProps.TryGetValue("H2", out var h2)
-            && IntegerRange.TryParse(h2, out var h2Value)
+            && HeaderValue.TryParse(h2, out var h2Value)
         )
         {
             amneziaConfig.H2 = h2Value;
@@ -216,7 +216,7 @@ public class AmneziaWgConfigurationReader(TextReader textReader)
 
         if (
             interfaceProps.TryGetValue("H3", out var h3)
-            && IntegerRange.TryParse(h3, out var h3Value)
+            && HeaderValue.TryParse(h3, out var h3Value)
         )
         {
             amneziaConfig.H3 = h3Value;
@@ -228,7 +228,7 @@ public class AmneziaWgConfigurationReader(TextReader textReader)
 
         if (
             interfaceProps.TryGetValue("H4", out var h4)
-            && IntegerRange.TryParse(h4, out var h4Value)
+            && HeaderValue.TryParse(h4, out var h4Value)
         )
         {
             amneziaConfig.H4 = h4Value;

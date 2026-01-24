@@ -640,7 +640,7 @@ public class WireguardConfigurationTests
         for (int i = 0; i < expected.Peers.Count; i++)
         {
             Assert.Equal(expected.Peers[i].PublicKey, actual.Peers[i].PublicKey);
-            Assert.Equal(expected.Peers[i].AllowedIPs.Length, actual.Peers[i].AllowedIPs.Length);
+            Assert.Equal(expected.Peers[i].AllowedIPs.Count, actual.Peers[i].AllowedIPs.Count);
             Assert.Equal(
                 expected.Peers[i].Endpoint?.ToString(),
                 actual.Peers[i].Endpoint?.ToString()

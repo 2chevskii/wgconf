@@ -93,7 +93,7 @@ public class WireguardConfigurationWriterTests
         {
             PrivateKey = Convert.FromBase64String("YAnz5TF+lXXJte14tji3zlMNftqN9xFSeRCFKtheBGY="),
             ListenPort = 51820,
-            Address = CIDR.Parse("10.0.0.1/24"),
+            Address = "10.0.0.1/24",
         };
 
         config.Peers.Add(
@@ -102,7 +102,7 @@ public class WireguardConfigurationWriterTests
                 PublicKey = Convert.FromBase64String(
                     "xTIBA5rboUvnH4htodjb6e697QjLERt1NAB4mZqp8Dg="
                 ),
-                AllowedIPs = [CIDR.Parse("10.0.0.2/32")],
+                AllowedIPs = { "10.0.0.2/32" },
             }
         );
 

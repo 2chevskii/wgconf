@@ -119,20 +119,20 @@ AllowedIPs = 10.0.0.2/32";
         var result = reader.Read();
 
         Assert.NotNull(result.H1);
-        Assert.Equal(25, result.H1.Value.Start);
-        Assert.Equal(30, result.H1.Value.End);
+        Assert.Equal(25ul, result.H1.Value.Start);
+        Assert.Equal(30ul, result.H1.Value.End);
 
         Assert.NotNull(result.H2);
-        Assert.Equal(100, result.H2.Value.Start);
-        Assert.Equal(200, result.H2.Value.End);
+        Assert.Equal(100ul, result.H2.Value.Start);
+        Assert.Equal(200ul, result.H2.Value.End);
 
         Assert.NotNull(result.H3);
-        Assert.Equal(5, result.H3.Value.Start);
-        Assert.Equal(10, result.H3.Value.End);
+        Assert.Equal(5ul, result.H3.Value.Start);
+        Assert.Equal(10ul, result.H3.Value.End);
 
         Assert.NotNull(result.H4);
-        Assert.Equal(1000, result.H4.Value.Start);
-        Assert.Equal(2000, result.H4.Value.End);
+        Assert.Equal(1000ul, result.H4.Value.Start);
+        Assert.Equal(2000ul, result.H4.Value.End);
     }
 
     [Fact]
@@ -156,19 +156,19 @@ AllowedIPs = 10.0.0.2/32";
         var result = reader.Read();
 
         Assert.NotNull(result.H1);
-        Assert.Equal(25, result.H1.Value.Start);
+        Assert.Equal(25ul, result.H1.Value.Start);
         Assert.Null(result.H1.Value.End);
 
         Assert.NotNull(result.H2);
-        Assert.Equal(100, result.H2.Value.Start);
+        Assert.Equal(100ul, result.H2.Value.Start);
         Assert.Null(result.H2.Value.End);
 
         Assert.NotNull(result.H3);
-        Assert.Equal(5, result.H3.Value.Start);
+        Assert.Equal(5ul, result.H3.Value.Start);
         Assert.Null(result.H3.Value.End);
 
         Assert.NotNull(result.H4);
-        Assert.Equal(1000, result.H4.Value.Start);
+        Assert.Equal(1000ul, result.H4.Value.Start);
         Assert.Null(result.H4.Value.End);
     }
 
@@ -193,20 +193,20 @@ AllowedIPs = 10.0.0.2/32";
         var result = reader.Read();
 
         Assert.NotNull(result.H1);
-        Assert.Equal(25, result.H1.Value.Start);
+        Assert.Equal(25ul, result.H1.Value.Start);
         Assert.Null(result.H1.Value.End);
 
         Assert.NotNull(result.H2);
-        Assert.Equal(100, result.H2.Value.Start);
-        Assert.Equal(200, result.H2.Value.End);
+        Assert.Equal(100ul, result.H2.Value.Start);
+        Assert.Equal(200ul, result.H2.Value.End);
 
         Assert.NotNull(result.H3);
-        Assert.Equal(5, result.H3.Value.Start);
+        Assert.Equal(5ul, result.H3.Value.Start);
         Assert.Null(result.H3.Value.End);
 
         Assert.NotNull(result.H4);
-        Assert.Equal(1000, result.H4.Value.Start);
-        Assert.Equal(2000, result.H4.Value.End);
+        Assert.Equal(1000ul, result.H4.Value.Start);
+        Assert.Equal(2000ul, result.H4.Value.End);
     }
 
     [Fact]
@@ -249,7 +249,7 @@ AllowedIPs = 10.0.0.2/32";
         Assert.Equal(20, result.Jmin);
         Assert.Equal("val1", result.I1);
         Assert.NotNull(result.H1);
-        Assert.Equal(25, result.H1.Value.Start);
+        Assert.Equal(25ul, result.H1.Value.Start);
     }
 
     [Fact]
