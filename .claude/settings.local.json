@@ -5,7 +5,9 @@
       "Bash(dotnet restore:*)",
       "Bash(ls:*)",
       "Bash(dotnet test:*)",
-      "Bash(dotnet csharpier:*)"
+      "Bash(dotnet csharpier:*)",
+      "Bash(dotnet tool restore:*)",
+      "Bash(cat:*)"
     ]
   }
 }
