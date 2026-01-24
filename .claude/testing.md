@@ -53,32 +53,37 @@
    - ToString() formatting
    - Round-trip serialization
 
-### WgConf.Amnezia.Tests (36 tests, 696 lines)
+### WgConf.Amnezia.Tests (52 tests, 926 lines)
 
 **Test Classes**:
-1. **IntegerRangeTests.cs** (140 lines, 16 tests)
+1. **IntegerRangeTests.cs** (213 lines, 24 tests)
    - Parse valid ranges (e.g., "25-30")
-   - Parse invalid ranges
-   - Negative number support
-   - TryParse pattern
-   - ToString() formatting
-   - Round-trip serialization
+   - Parse single values (e.g., "25")
+   - Parse single negative values (e.g., "-10")
+   - Parse invalid values
+   - Negative number support in ranges
+   - TryParse pattern for both formats
+   - ToString() formatting for single values and ranges
+   - Round-trip serialization for both formats
 
-2. **AmneziaWgConfigurationReaderTests.cs** (314 lines, 14 tests)
+2. **AmneziaWgConfigurationReaderTests.cs** (386 lines, 16 tests)
    - Parse minimal AmneziaWG configs
    - Parse integer properties (Jc, Jmin, etc.)
    - Parse string properties (I1-I5)
-   - Parse range properties (H1-H4)
+   - Parse range properties (H1-H4) with both single values and ranges
+   - Parse mixed single value and range properties
    - Complete configuration parsing
    - Case-insensitivity
    - Error handling for invalid properties
    - TryRead pattern
    - Async methods
 
-3. **AmneziaWgConfigurationWriterTests.cs** (242 lines, 10 tests)
+3. **AmneziaWgConfigurationWriterTests.cs** (327 lines, 12 tests)
    - Write minimal AmneziaWG configs
    - Write complete configs with all properties
    - Integer/string/range property serialization
+   - Single value range property serialization
+   - Mixed single value and range property serialization
    - Null optional property handling
    - Property ordering (standard WireGuard first, then AmneziaWG)
    - Round-trip with reader

@@ -20,7 +20,7 @@ dotnet csharpier format .       # Format code
 ### Projects
 
 - **WgConf**: Base library (Interface/Peer configs, CIDR, Endpoint, Reader/Writer)
-- **WgConf.Amnezia**: Extension with 20 AmneziaWG obfuscation parameters
+- **WgConf.Amnezia**: Extension with 20 AmneziaWG obfuscation parameters (H1-H4 support single values and ranges)
 
 ### Documentation
 

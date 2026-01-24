@@ -15,6 +15,33 @@ public class IntegerRangeTests
     }
 
     [Fact]
+    public void Parse_SingleValue_ReturnsCorrectValues()
+    {
+        var range = IntegerRange.Parse("25");
+
+        Assert.Equal(25, range.Start);
+        Assert.Null(range.End);
+    }
+
+    [Fact]
+    public void Parse_SingleNegativeValue_ReturnsCorrectValues()
+    {
+        var range = IntegerRange.Parse("-10");
+
+        Assert.Equal(-10, range.Start);
+        Assert.Null(range.End);
+    }
+
+    [Fact]
+    public void Parse_SingleValueWithWhitespace_Parses()
+    {
+        var range = IntegerRange.Parse("  42  ");
+
+        Assert.Equal(42, range.Start);
+        Assert.Null(range.End);
+    }
+
+    [Fact]
     public void Parse_SameStartEnd_ReturnsCorrectValues()
     {
         var range = IntegerRange.Parse("5-5");
@@ -60,9 +87,9 @@ public class IntegerRangeTests
     }
 
     [Fact]
-    public void Parse_MissingDash_ThrowsFormatException()
+    public void Parse_InvalidSingleValue_ThrowsFormatException()
     {
-        Assert.Throws<FormatException>(() => IntegerRange.Parse("1020"));
+        Assert.Throws<FormatException>(() => IntegerRange.Parse("abc"));
     }
 
     [Fact]
@@ -94,6 +121,16 @@ public class IntegerRangeTests
     }
 
     [Fact]
+    public void TryParse_ValidSingleValue_ReturnsTrue()
+    {
+        var success = IntegerRange.TryParse("42", out var range);
+
+        Assert.True(success);
+        Assert.Equal(42, range.Start);
+        Assert.Null(range.End);
+    }
+
+    [Fact]
     public void TryParse_InvalidFormat_ReturnsFalse()
     {
         var success = IntegerRange.TryParse("invalid", out var range);
@@ -108,6 +145,22 @@ public class IntegerRangeTests
         var range = new IntegerRange { Start = 25, End = 30 };
 
         Assert.Equal("25-30", range.ToString());
+    }
+
+    [Fact]
+    public void ToString_SingleValue_ReturnsCorrectFormat()
+    {
+        var range = new IntegerRange { Start = 25, End = null };
+
+        Assert.Equal("25", range.ToString());
+    }
+
+    [Fact]
+    public void ToString_SingleNegativeValue_ReturnsCorrectFormat()
+    {
+        var range = new IntegerRange { Start = -10, End = null };
+
+        Assert.Equal("-10", range.ToString());
     }
 
     [Fact]
@@ -132,6 +185,26 @@ public class IntegerRangeTests
     public void RoundTrip_WithNegative()
     {
         var original = "-50-100";
+        var range = IntegerRange.Parse(original);
+        var result = range.ToString();
+
+        Assert.Equal(original, result);
+    }
+
+    [Fact]
+    public void RoundTrip_SingleValue()
+    {
+        var original = "100";
+        var range = IntegerRange.Parse(original);
+        var result = range.ToString();
+
+        Assert.Equal(original, result);
+    }
+
+    [Fact]
+    public void RoundTrip_SingleNegativeValue()
+    {
+        var original = "-50";
         var range = IntegerRange.Parse(original);
         var result = range.ToString();
 

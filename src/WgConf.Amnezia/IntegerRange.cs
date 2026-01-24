@@ -3,7 +3,7 @@ namespace WgConf.Amnezia;
 public readonly struct IntegerRange
 {
     public required int Start { get; init; }
-    public required int End { get; init; }
+    public required int? End { get; init; }
 
     public static IntegerRange Parse(string s)
     {
@@ -13,17 +13,32 @@ public readonly struct IntegerRange
     public static IntegerRange Parse(ReadOnlySpan<char> s)
     {
         var dashIndex = s.LastIndexOf('-');
+
+        // No dash found - single value
         if (dashIndex == -1)
         {
-            throw new FormatException(
-                "IntegerRange must contain '-' separator (format: 'start-end')"
-            );
+            var trimmed = s.Trim();
+            if (!int.TryParse(trimmed, out var singleValue))
+            {
+                throw new FormatException(
+                    $"Invalid integer value in IntegerRange: '{trimmed.ToString()}'"
+                );
+            }
+            return new IntegerRange { Start = singleValue, End = null };
         }
 
+        // Dash at start could be negative number, not separator
         if (dashIndex == 0)
         {
+            // Try parsing as single negative number first
+            var trimmed = s.Trim();
+            if (int.TryParse(trimmed, out var singleValue))
+            {
+                return new IntegerRange { Start = singleValue, End = null };
+            }
+
             throw new FormatException(
-                "IntegerRange must contain '-' separator (format: 'start-end')"
+                "IntegerRange must be either a single integer or 'start-end' format"
             );
         }
 
@@ -61,6 +76,6 @@ public readonly struct IntegerRange
 
     public override string ToString()
     {
-        return $"{Start}-{End}";
+        return End.HasValue ? $"{Start}-{End.Value}" : Start.ToString();
     }
 }

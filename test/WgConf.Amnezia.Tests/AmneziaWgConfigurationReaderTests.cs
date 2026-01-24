@@ -136,6 +136,80 @@ AllowedIPs = 10.0.0.2/32";
     }
 
     [Fact]
+    public void Read_WithSingleValueRangeProperties_ParsesCorrectly()
+    {
+        var config =
+            @"[Interface]
+PrivateKey = YAnz5TF+lXXJte14tji3zlMNftTLq5yJTfxLUcv7hag=
+ListenPort = 51820
+Address = 10.0.0.1/24
+H1 = 25
+H2 = 100
+H3 = 5
+H4 = 1000
+
+[Peer]
+PublicKey = xTIBA5rboUvnH4htodjb6e697QjLERt1NAB4mZqp8Dg=
+AllowedIPs = 10.0.0.2/32";
+
+        using var reader = new AmneziaWgConfigurationReader(new StringReader(config));
+        var result = reader.Read();
+
+        Assert.NotNull(result.H1);
+        Assert.Equal(25, result.H1.Value.Start);
+        Assert.Null(result.H1.Value.End);
+
+        Assert.NotNull(result.H2);
+        Assert.Equal(100, result.H2.Value.Start);
+        Assert.Null(result.H2.Value.End);
+
+        Assert.NotNull(result.H3);
+        Assert.Equal(5, result.H3.Value.Start);
+        Assert.Null(result.H3.Value.End);
+
+        Assert.NotNull(result.H4);
+        Assert.Equal(1000, result.H4.Value.Start);
+        Assert.Null(result.H4.Value.End);
+    }
+
+    [Fact]
+    public void Read_WithMixedRangeAndSingleValues_ParsesCorrectly()
+    {
+        var config =
+            @"[Interface]
+PrivateKey = YAnz5TF+lXXJte14tji3zlMNftTLq5yJTfxLUcv7hag=
+ListenPort = 51820
+Address = 10.0.0.1/24
+H1 = 25
+H2 = 100-200
+H3 = 5
+H4 = 1000-2000
+
+[Peer]
+PublicKey = xTIBA5rboUvnH4htodjb6e697QjLERt1NAB4mZqp8Dg=
+AllowedIPs = 10.0.0.2/32";
+
+        using var reader = new AmneziaWgConfigurationReader(new StringReader(config));
+        var result = reader.Read();
+
+        Assert.NotNull(result.H1);
+        Assert.Equal(25, result.H1.Value.Start);
+        Assert.Null(result.H1.Value.End);
+
+        Assert.NotNull(result.H2);
+        Assert.Equal(100, result.H2.Value.Start);
+        Assert.Equal(200, result.H2.Value.End);
+
+        Assert.NotNull(result.H3);
+        Assert.Equal(5, result.H3.Value.Start);
+        Assert.Null(result.H3.Value.End);
+
+        Assert.NotNull(result.H4);
+        Assert.Equal(1000, result.H4.Value.Start);
+        Assert.Equal(2000, result.H4.Value.End);
+    }
+
+    [Fact]
     public void Read_CompleteConfig_ParsesAllProperties()
     {
         var config =

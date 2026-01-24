@@ -47,10 +47,13 @@
   - **IntegerRange** (4): `H1-H4` (format: "25-30")
 - Inherits all base factory/instance methods
 
-**IntegerRange** (struct) - `start-end` format
+**IntegerRange** (struct) - Single integer or `start-end` range format
+- Supports both single values (e.g., `"25"`) and ranges (e.g., `"25-30"`)
+- `int Start` - Always required
+- `int? End` - Nullable; `null` indicates single value, non-null indicates range
 - `Parse(string)`, `Parse(ReadOnlySpan<char>)`, `TryParse()`
 - Uses `LastIndexOf('-')` to support negative numbers
-- `ToString()` - Round-trip serialization
+- `ToString()` - Outputs single value or range format based on `End` value
 
 ## Reader/Writer Pattern
 

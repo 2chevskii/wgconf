@@ -88,6 +88,48 @@ public class AmneziaWgConfigurationWriterTests
     }
 
     [Fact]
+    public void Write_WithSingleValueRangeProperties_OutputsCorrectly()
+    {
+        var config = new AmneziaWgConfiguration
+        {
+            PrivateKey = Convert.FromBase64String("YAnz5TF+lXXJte14tji3zlMNftTLq5yJTfxLUcv7hag="),
+            ListenPort = 51820,
+            Address = CIDR.Parse("10.0.0.1/24"),
+            H1 = new IntegerRange { Start = 25, End = null },
+            H2 = new IntegerRange { Start = 100, End = null },
+        };
+
+        var output = WriteToString(config);
+
+        Assert.Contains("H1 = 25", output);
+        Assert.Contains("H2 = 100", output);
+        Assert.DoesNotContain("H1 = 25-", output);
+        Assert.DoesNotContain("H2 = 100-", output);
+    }
+
+    [Fact]
+    public void Write_WithMixedRangeAndSingleValues_OutputsCorrectly()
+    {
+        var config = new AmneziaWgConfiguration
+        {
+            PrivateKey = Convert.FromBase64String("YAnz5TF+lXXJte14tji3zlMNftTLq5yJTfxLUcv7hag="),
+            ListenPort = 51820,
+            Address = CIDR.Parse("10.0.0.1/24"),
+            H1 = new IntegerRange { Start = 25, End = null },
+            H2 = new IntegerRange { Start = 100, End = 200 },
+            H3 = new IntegerRange { Start = 5, End = null },
+            H4 = new IntegerRange { Start = 1000, End = 2000 },
+        };
+
+        var output = WriteToString(config);
+
+        Assert.Contains("H1 = 25", output);
+        Assert.Contains("H2 = 100-200", output);
+        Assert.Contains("H3 = 5", output);
+        Assert.Contains("H4 = 1000-2000", output);
+    }
+
+    [Fact]
     public void Write_CompleteConfig_OutputsAllProperties()
     {
         var config = new AmneziaWgConfiguration
