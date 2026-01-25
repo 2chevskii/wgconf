@@ -114,10 +114,11 @@ public readonly struct HeaderValue
 
     public IEnumerator<ulong> GetEnumerator()
     {
+        List<ulong> list = [Start];
         if (End.HasValue)
-            return (IEnumerator<ulong>)new[] { Start, End.Value }.GetEnumerator();
+            list.Add(End.Value);
 
-        return (IEnumerator<ulong>)new[] { Start }.GetEnumerator();
+        return list.GetEnumerator();
     }
 
     public override string ToString()

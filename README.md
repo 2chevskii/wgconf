@@ -147,6 +147,8 @@ The library includes comprehensive test coverage (117 tests):
 dotnet test
 ```
 
+Coverage reports (OpenCover XML) are produced under `TestResults/<ProjectName>/coverage.opencover.xml`.
+
 ## Requirements
 
 - .NET 8.0 or later

@@ -94,8 +94,8 @@
 # Run all tests
 dotnet test
 
-# Run tests with code coverage
-dotnet test --collect:"XPlat Code Coverage" --settings .runsettings
+# Run tests with code coverage (coverlet.msbuild)
+dotnet test
 
 # Run tests for specific project
 dotnet test test/WgConf.Tests/WgConf.Tests.csproj
@@ -108,16 +108,14 @@ dotnet test --verbosity detailed
 dotnet test --filter "FullyQualifiedName~WireguardConfigurationReaderTests"
 ```
 
-## Coverage Configuration (`.runsettings`)
+## Coverage Configuration (MSBuild)
 
 ### Settings
 - **Format**: OpenCover XML
-- **Output**: `./TestResults` directory
-- **Collectors**: XPlat Code Coverage (coverlet)
+- **Output**: `./TestResults/<ProjectName>/coverage.opencover.xml`
 - **Threshold**: 80% line coverage (enforced in CI)
 
 ### Exclusions
-- Test assemblies (`*.Tests`)
 - Compiler-generated code
 - Generated code files
 
@@ -131,7 +129,7 @@ dotnet test --filter "FullyQualifiedName~WireguardConfigurationReaderTests"
 CI pipeline fails if line coverage < 80%:
 ```bash
 # CI validation command
-dotnet test --collect:"XPlat Code Coverage" --settings .runsettings
+dotnet test
 dotnet reportgenerator -reports:TestResults/*/coverage.opencover.xml \
   -targetdir:./coverage-report -reporttypes:"Html;Cobertura;Badges"
 

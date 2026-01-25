@@ -5,6 +5,12 @@
     <IsPackable>false</IsPackable>
     <IsTestProject>true</IsTestProject>
     <CollectCoverage>true</CollectCoverage>
+    <CoverletOutputFormat>opencover</CoverletOutputFormat>
+    <CoverletOutput>$(MSBuildThisFileDirectory)../TestResults/$(MSBuildProjectName)/</CoverletOutput>
+    <ExcludeByFile>**/obj/**,**/bin/**</ExcludeByFile>
+    <ExcludeByAttribute>Obsolete,GeneratedCodeAttribute,CompilerGeneratedAttribute</ExcludeByAttribute>
+    <IncludeTestAssembly>false</IncludeTestAssembly>
+    <UseSourceLink>true</UseSourceLink>
   </PropertyGroup>
 
   <ItemGroup>

@@ -42,5 +42,19 @@ jobs:
         with:
           name: wgconf-amnezia-tests
           path: test/WgConf.Amnezia.Tests/bin/Release/net8.0
-      - run: dotnet test --no-build --no-restore --configuration Release test/WgConf.Tests/WgConf.Tests.csproj
-      - run: dotnet test --no-build --no-restore --configuration Release test/WgConf.Amnezia.Tests/WgConf.Amnezia.Tests.csproj
+      - run: >-
+          dotnet test
+          --no-build
+          --no-restore
+          --configuration Release
+          --logger "trx;LogFileName=test-results.trx"
+          --results-directory "TestResults/WgConf.Tests"
+          test/WgConf.Tests/WgConf.Tests.csproj
+      - run: >-
+          dotnet test
+          --no-build
+          --no-restore
+          --configuration Release
+          --logger "trx;LogFileName=test-results.trx"
+          --results-directory "TestResults/WgConf.Amnezia.Tests"
+          test/WgConf.Amnezia.Tests/WgConf.Amnezia.Tests.csproj
