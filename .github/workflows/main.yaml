@@ -12,7 +12,7 @@ jobs:
     steps:
       - uses: actions/checkout@v6
       - run: dotnet restore
-      - run: dotnet build -c Release WgConf.slnx
+      - run: dotnet build --configuration Release --no-restore WgConf.slnx
       - uses: actions/upload-artifact@v6
         with:
           path: src/WgConf/bin/Release/net8.0
@@ -23,11 +23,11 @@ jobs:
           name: wgconf-amnezia
       - uses: actions/upload-artifact@v6
         with:
-          path: test/WgConf.Tests/bin/Release/net10.0
+          path: test/WgConf.Tests/bin/Release/net8.0
           name: wgconf-tests
       - uses: actions/upload-artifact@v6
         with:
-          path: test/WgConf.Amnezia.Tests/bin/Release/net10.0
+          path: test/WgConf.Amnezia.Tests/bin/Release/net8.0
           name: wgconf-amnezia-tests
   test:
     runs-on: ubuntu-latest
@@ -45,8 +45,8 @@ jobs:
       - uses: actions/download-artifact@v7
         with:
           name: wgconf-tests
-          path: test/WgConf.Tests/bin/Release/net10.0
+          path: test/WgConf.Tests/bin/Release/net8.0
       - uses: actions/download-artifact@v7
         with:
           name: wgconf-amnezia-tests
-          path: test/WgConf.Amnezia.Tests/bin/Release/net10.0
+          path: test/WgConf.Amnezia.Tests/bin/Release/net8.0
