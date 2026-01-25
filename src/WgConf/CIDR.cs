@@ -8,6 +8,7 @@ public readonly struct CIDR
     public required IPAddress Address { get; init; }
     public required int PrefixLength { get; init; }
 
+    // public static implicit operator CIDR(string input) => Parse(input);
     public static implicit operator CIDR(ReadOnlySpan<char> input) => Parse(input);
 
     public static bool TryParse(ReadOnlySpan<char> input, out CIDR result, out Exception? exception)

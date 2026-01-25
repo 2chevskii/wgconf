@@ -17,6 +17,7 @@
   </Folder>
   <Folder Name="/test/">
     <Project Path="test/WgConf.Tests/WgConf.Tests.csproj" />
+    <File Path="test/Directory.Build.props" />
     <Project Path="test/WgConf.Amnezia.Tests/WgConf.Amnezia.Tests.csproj" />
   </Folder>
 </Solution>
