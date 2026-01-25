@@ -34,14 +34,6 @@ jobs:
     needs: build
     steps:
       - uses: actions/checkout@v6
-      # - uses: actions/download-artifact@v7
-      #   with:
-      #     name: wgconf
-      #     path: src/WgConf/bin/Release/net8.0
-      # - uses: actions/download-artifact@v7
-      #   with:
-      #     name: wgconf-amnezia
-      #     path: src/WgConf.Amnezia/bin/Release/net8.0
       - uses: actions/download-artifact@v7
         with:
           name: wgconf-tests
@@ -50,7 +42,5 @@ jobs:
         with:
           name: wgconf-amnezia-tests
           path: test/WgConf.Amnezia.Tests/bin/Release/net8.0
-      - run: dotnet test --configuration Release --no-build test/WgConf.Tests/WgConf.Tests.csproj
-      - run: >-
-          dotnet test --configuration Release --no-build
-          test/WgConf.Amnezia.Tests/WgConf.Amnezia.Tests.csproj
+      - run: dotnet test --no-build --no-restore --configuration Release test/WgConf.Tests/WgConf.Tests.csproj
+      - run: dotnet test --no-build --no-restore --configuration Release test/WgConf.Amnezia.Tests/WgConf.Amnezia.Tests.csproj
