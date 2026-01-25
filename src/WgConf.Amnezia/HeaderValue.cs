@@ -46,6 +46,8 @@ public readonly struct HeaderValue
     public static implicit operator HeaderValue(ValueTuple<ulong, ulong> range) =>
         new HeaderValue(range.Item1, range.Item2);
 
+    public static implicit operator HeaderValue(string input) => Parse(input);
+
     public static bool TryParse(ReadOnlySpan<char> input, out HeaderValue headerValue)
     {
         Exception? exception = null;
