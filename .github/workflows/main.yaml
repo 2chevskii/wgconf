@@ -50,3 +50,5 @@ jobs:
         with:
           name: wgconf-amnezia-tests
           path: test/WgConf.Amnezia.Tests/bin/Release/net8.0
+      - run: dotnet test --configuration Release --no-build test/WgConf.Tests
+      - run: dotnet test --configuration Release --no-build test/WgConf.Amnezia.Tests
