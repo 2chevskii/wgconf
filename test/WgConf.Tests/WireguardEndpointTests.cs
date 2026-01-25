@@ -66,7 +66,11 @@ public class WireguardEndpointTests
     [Fact]
     public void TryParse_ValidEndpoint_ReturnsTrue()
     {
-        var success = WireguardEndpoint.TryParse("example.com:51820", out var endpoint, out var exception);
+        var success = WireguardEndpoint.TryParse(
+            "example.com:51820",
+            out var endpoint,
+            out var exception
+        );
 
         Assert.True(success);
         Assert.Null(exception);

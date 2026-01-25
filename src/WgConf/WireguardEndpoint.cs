@@ -12,7 +12,11 @@ public readonly struct WireguardEndpoint
         return Parse(input);
     }
 
-    public static bool TryParse(ReadOnlySpan<char> input, out WireguardEndpoint result, out Exception? exception)
+    public static bool TryParse(
+        ReadOnlySpan<char> input,
+        out WireguardEndpoint result,
+        out Exception? exception
+    )
     {
         result = default;
         exception = null;
