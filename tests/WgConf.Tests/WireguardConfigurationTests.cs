@@ -262,9 +262,16 @@ public class WireguardConfigurationTests
         var tempFile = Path.GetTempFileName();
         try
         {
-            await File.WriteAllTextAsync(tempFile, ValidConfigText);
+            await File.WriteAllTextAsync(
+                tempFile,
+                ValidConfigText,
+                TestContext.Current.CancellationToken
+            );
 
-            var config = await WireguardConfiguration.LoadAsync(tempFile);
+            var config = await WireguardConfiguration.LoadAsync(
+                tempFile,
+                TestContext.Current.CancellationToken
+            );
 
             Assert.NotNull(config);
             Assert.Equal(51820, config.ListenPort);
@@ -282,9 +289,16 @@ public class WireguardConfigurationTests
         var tempFile = Path.GetTempFileName();
         try
         {
-            await File.WriteAllTextAsync(tempFile, CompleteConfigText);
+            await File.WriteAllTextAsync(
+                tempFile,
+                CompleteConfigText,
+                TestContext.Current.CancellationToken
+            );
 
-            var config = await WireguardConfiguration.LoadAsync(tempFile);
+            var config = await WireguardConfiguration.LoadAsync(
+                tempFile,
+                TestContext.Current.CancellationToken
+            );
 
             Assert.Equal("echo 'Starting WireGuard'", config.PreUp);
             Assert.Equal("iptables -A FORWARD -i wg0 -j ACCEPT", config.PostUp);
@@ -302,10 +316,17 @@ public class WireguardConfigurationTests
         var tempFile = Path.GetTempFileName();
         try
         {
-            await File.WriteAllTextAsync(tempFile, InvalidConfigText);
+            await File.WriteAllTextAsync(
+                tempFile,
+                InvalidConfigText,
+                TestContext.Current.CancellationToken
+            );
 
             await Assert.ThrowsAsync<WireguardConfigurationException>(async () =>
-                await WireguardConfiguration.LoadAsync(tempFile)
+                await WireguardConfiguration.LoadAsync(
+                    tempFile,
+                    TestContext.Current.CancellationToken
+                )
             );
         }
         finally
@@ -320,7 +341,10 @@ public class WireguardConfigurationTests
         var nonExistentPath = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
 
         await Assert.ThrowsAsync<FileNotFoundException>(async () =>
-            await WireguardConfiguration.LoadAsync(nonExistentPath)
+            await WireguardConfiguration.LoadAsync(
+                nonExistentPath,
+                TestContext.Current.CancellationToken
+            )
         );
     }
 
@@ -330,7 +354,11 @@ public class WireguardConfigurationTests
         var tempFile = Path.GetTempFileName();
         try
         {
-            await File.WriteAllTextAsync(tempFile, ValidConfigText);
+            await File.WriteAllTextAsync(
+                tempFile,
+                ValidConfigText,
+                TestContext.Current.CancellationToken
+            );
             var cts = new CancellationTokenSource();
             cts.Cancel();
 
@@ -451,13 +479,19 @@ public class WireguardConfigurationTests
         var tempFile = Path.GetTempFileName();
         try
         {
-            await config.SaveAsync(tempFile);
+            await config.SaveAsync(tempFile, TestContext.Current.CancellationToken);
 
             Assert.True(File.Exists(tempFile));
-            var written = await File.ReadAllTextAsync(tempFile);
+            var written = await File.ReadAllTextAsync(
+                tempFile,
+                TestContext.Current.CancellationToken
+            );
             Assert.NotEmpty(written);
 
-            var reloaded = await WireguardConfiguration.LoadAsync(tempFile);
+            var reloaded = await WireguardConfiguration.LoadAsync(
+                tempFile,
+                TestContext.Current.CancellationToken
+            );
             Assert.Equal(config.PrivateKey, reloaded.PrivateKey);
             Assert.Equal(config.ListenPort, reloaded.ListenPort);
             Assert.Equal(config.Address.ToString(), reloaded.Address.ToString());
@@ -475,9 +509,12 @@ public class WireguardConfigurationTests
         var tempFile = Path.GetTempFileName();
         try
         {
-            await config.SaveAsync(tempFile);
+            await config.SaveAsync(tempFile, TestContext.Current.CancellationToken);
 
-            var reloaded = await WireguardConfiguration.LoadAsync(tempFile);
+            var reloaded = await WireguardConfiguration.LoadAsync(
+                tempFile,
+                TestContext.Current.CancellationToken
+            );
             Assert.Equal(config.PreUp, reloaded.PreUp);
             Assert.Equal(config.PostUp, reloaded.PostUp);
             Assert.Equal(config.PreDown, reloaded.PreDown);
@@ -509,10 +546,13 @@ public class WireguardConfigurationTests
         var tempFile = Path.GetTempFileName();
         try
         {
-            await config1.SaveAsync(tempFile);
-            await config2.SaveAsync(tempFile);
+            await config1.SaveAsync(tempFile, TestContext.Current.CancellationToken);
+            await config2.SaveAsync(tempFile, TestContext.Current.CancellationToken);
 
-            var reloaded = await WireguardConfiguration.LoadAsync(tempFile);
+            var reloaded = await WireguardConfiguration.LoadAsync(
+                tempFile,
+                TestContext.Current.CancellationToken
+            );
             Assert.Equal(51821, reloaded.ListenPort);
             Assert.Equal("10.0.0.2/24", reloaded.Address.ToString());
         }
@@ -534,7 +574,7 @@ public class WireguardConfigurationTests
         );
 
         await Assert.ThrowsAsync<DirectoryNotFoundException>(async () =>
-            await config.SaveAsync(invalidPath)
+            await config.SaveAsync(invalidPath, TestContext.Current.CancellationToken)
         );
     }
 
@@ -588,8 +628,11 @@ public class WireguardConfigurationTests
         var tempFile = Path.GetTempFileName();
         try
         {
-            await original.SaveAsync(tempFile);
-            var reloaded = await WireguardConfiguration.LoadAsync(tempFile);
+            await original.SaveAsync(tempFile, TestContext.Current.CancellationToken);
+            var reloaded = await WireguardConfiguration.LoadAsync(
+                tempFile,
+                TestContext.Current.CancellationToken
+            );
 
             AssertConfigurationsEqual(original, reloaded);
         }
@@ -606,12 +649,19 @@ public class WireguardConfigurationTests
         var tempFile2 = Path.GetTempFileName();
         try
         {
-            await File.WriteAllTextAsync(tempFile1, CompleteConfigText);
+            await File.WriteAllTextAsync(
+                tempFile1,
+                CompleteConfigText,
+                TestContext.Current.CancellationToken
+            );
 
             var config = WireguardConfiguration.Load(tempFile1);
-            await config.SaveAsync(tempFile2);
+            await config.SaveAsync(tempFile2, TestContext.Current.CancellationToken);
 
-            var reloaded = await WireguardConfiguration.LoadAsync(tempFile2);
+            var reloaded = await WireguardConfiguration.LoadAsync(
+                tempFile2,
+                TestContext.Current.CancellationToken
+            );
             AssertConfigurationsEqual(config, reloaded);
         }
         finally

@@ -1,7 +1,7 @@
+using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Reflection;
-using System.Linq;
 
 namespace WgConf.Amnezia.Tests;
 
@@ -128,11 +128,7 @@ public class WgConfBaseCoverageTests
     [Fact]
     public void WireguardConfigurationException_MultipleErrors_FormatsMessage()
     {
-        var errors = new[]
-        {
-            new ParseError(1, "First"),
-            new ParseError(2, "Second"),
-        };
+        var errors = new[] { new ParseError(1, "First"), new ParseError(2, "Second") };
 
         var exception = new WireguardConfigurationException(errors);
 
@@ -148,8 +144,10 @@ public class WgConfBaseCoverageTests
         var method = type!
             .GetMethods(BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic)
             .Single(m =>
-                (m.Name.Equals(nameFragment, StringComparison.Ordinal)
-                    || m.Name.Equals($"get_{nameFragment}", StringComparison.Ordinal))
+                (
+                    m.Name.Equals(nameFragment, StringComparison.Ordinal)
+                    || m.Name.Equals($"get_{nameFragment}", StringComparison.Ordinal)
+                )
                 && m.GetParameters().Length == 1
             );
 

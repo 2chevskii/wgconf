@@ -17,7 +17,7 @@ public class WireguardConfigurationReaderAsyncTests
             """;
 
         await using var reader = new WireguardConfigurationReader(new StringReader(input));
-        var config = await reader.ReadAsync();
+        var config = await reader.ReadAsync(TestContext.Current.CancellationToken);
 
         Assert.NotNull(config);
         Assert.Equal(51820, config.ListenPort);
@@ -38,7 +38,7 @@ public class WireguardConfigurationReaderAsyncTests
         await using var reader = new WireguardConfigurationReader(new StringReader(input));
 
         await Assert.ThrowsAsync<WireguardConfigurationException>(async () =>
-            await reader.ReadAsync()
+            await reader.ReadAsync(TestContext.Current.CancellationToken)
         );
     }
 
@@ -53,7 +53,7 @@ public class WireguardConfigurationReaderAsyncTests
             """;
 
         await using var reader = new WireguardConfigurationReader(new StringReader(input));
-        var (config, errors) = await reader.TryReadAsync();
+        var (config, errors) = await reader.TryReadAsync(TestContext.Current.CancellationToken);
 
         Assert.NotNull(config);
         Assert.Empty(errors);
@@ -72,7 +72,7 @@ public class WireguardConfigurationReaderAsyncTests
             """;
 
         await using var reader = new WireguardConfigurationReader(new StringReader(input));
-        var (config, errors) = await reader.TryReadAsync();
+        var (config, errors) = await reader.TryReadAsync(TestContext.Current.CancellationToken);
 
         Assert.Null(config);
         Assert.NotEmpty(errors);

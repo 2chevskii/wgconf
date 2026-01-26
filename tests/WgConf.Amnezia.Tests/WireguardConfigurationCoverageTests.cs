@@ -51,11 +51,21 @@ public class WireguardConfigurationCoverageTests
         var tempFile = Path.GetTempFileName();
         try
         {
-            await File.WriteAllTextAsync(tempFile, ConfigText);
-            var loaded = await WireguardConfiguration.LoadAsync(tempFile);
+            await File.WriteAllTextAsync(
+                tempFile,
+                ConfigText,
+                TestContext.Current.CancellationToken
+            );
+            var loaded = await WireguardConfiguration.LoadAsync(
+                tempFile,
+                TestContext.Current.CancellationToken
+            );
 
-            await loaded.SaveAsync(tempFile);
-            var reloaded = await WireguardConfiguration.LoadAsync(tempFile);
+            await loaded.SaveAsync(tempFile, TestContext.Current.CancellationToken);
+            var reloaded = await WireguardConfiguration.LoadAsync(
+                tempFile,
+                TestContext.Current.CancellationToken
+            );
 
             Assert.Equal(loaded.ListenPort, reloaded.ListenPort);
         }

@@ -11,8 +11,8 @@
     <Authors>2CHEVSKII</Authors>
     <Copyright>Copyright (c) $([System.DateTime]::Now.Year) 2CHEVSKII</Copyright>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <PackageProjectUrl>https://github.com/dvchevskii/wgconf</PackageProjectUrl>
-    <RepositoryUrl>https://github.com/dvchevskii/wgconf</RepositoryUrl>
+    <PackageProjectUrl>https://github.com/2chevskii/wgconf</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/2chevskii/wgconf</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageTags>wireguard;wg;amneziawg;configuration;parser;vpn</PackageTags>
     <PackageReadmeFile>README.md</PackageReadmeFile>

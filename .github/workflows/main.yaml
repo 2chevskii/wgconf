@@ -1,7 +1,7 @@
 on: [push, pull_request]
 
 jobs:
-  validate-formatting:
+  format:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
@@ -12,49 +12,109 @@ jobs:
     steps:
       - uses: actions/checkout@v6
       - run: dotnet restore
-      - run: dotnet build --configuration Release --no-restore WgConf.slnx
+      - run: dotnet build --no-restore --configuration Release WgConf.slnx
+      - run: >-
+          dotnet publish 
+          --no-restore 
+          --no-build 
+          --configuration Release 
+          --output artifacts/tests/WgConf.Tests
+          tests/WgConf.Tests/WgConf.Tests.csproj
       - uses: actions/upload-artifact@v6
         with:
-          path: src/WgConf/bin/Release/net8.0
-          name: wgconf
+          path: artifacts/tests/WgConf.Tests
+          name: build-WgConf.Tests
+      - run: >-
+          dotnet publish
+          --no-restore
+          --no-build
+          --configuration Release
+          --output artifacts/tests/WgConf.Amnezia.Tests
+          tests/WgConf.Amnezia.Tests/WgConf.Amnezia.Tests.csproj
       - uses: actions/upload-artifact@v6
         with:
-          path: src/WgConf.Amnezia/bin/Release/net8.0
-          name: wgconf-amnezia
-      - uses: actions/upload-artifact@v6
-        with:
-          path: test/WgConf.Tests/bin/Release/net8.0
-          name: wgconf-tests
-      - uses: actions/upload-artifact@v6
-        with:
-          path: test/WgConf.Amnezia.Tests/bin/Release/net8.0
-          name: wgconf-amnezia-tests
+          path: artifacts/tests/WgConf.Amnezia.Tests
+          name: build-WgConf.Amnezia.Tests
   test:
     runs-on: ubuntu-latest
     needs: build
+    strategy:
+      fail-fast: false
+      matrix:
+        test-project:
+          - WgConf.Tests
+          - WgConf.Amnezia.Tests
     steps:
-      - uses: actions/checkout@v6
       - uses: actions/download-artifact@v7
         with:
-          name: wgconf-tests
-          path: test/WgConf.Tests/bin/Release/net8.0
-      - uses: actions/download-artifact@v7
+          name: build-${{ matrix.test-project }}
+          path: tests/${{ matrix.test-project }}
+      - run: chmod +x tests/${{ matrix.test-project }}/${{ matrix.test-project }}
+      - run: >-
+          ./tests/${{ matrix.test-project }}/${{ matrix.test-project }}
+          --output Detailed
+          --results-directory test_results/${{ matrix.test-project }}
+          --report-ctrf
+          --report-ctrf-filename report.json
+          --report-xunit-html
+          --report-xunit-html-filename report.html
+      - uses: actions/upload-artifact@v6
         with:
-          name: wgconf-amnezia-tests
-          path: test/WgConf.Amnezia.Tests/bin/Release/net8.0
+          path: test_results/${{ matrix.test-project }}/report.json
+          name: test-results-ctrf-${{ matrix.test-project }}
+      - uses: actions/upload-artifact@v6
+        with:
+          path: test_results/${{ matrix.test-project }}/report.html
+          name: test-results-html-${{ matrix.test-project }}
+  coverage:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
       - run: >-
-          dotnet test
-          --no-build
-          --no-restore
-          --configuration Release
-          --logger "trx;LogFileName=test-results.trx"
-          --results-directory "TestResults/WgConf.Tests"
-          test/WgConf.Tests/WgConf.Tests.csproj
+          dotnet tool install
+          --global
+          --verbosity normal
+          dotnet-coverage
       - run: >-
-          dotnet test
-          --no-build
-          --no-restore
-          --configuration Release
-          --logger "trx;LogFileName=test-results.trx"
-          --results-directory "TestResults/WgConf.Amnezia.Tests"
-          test/WgConf.Amnezia.Tests/WgConf.Amnezia.Tests.csproj
+          dotnet tool install
+          --global
+          --verbosity normal
+          dotnet-reportgenerator-globaltool
+      - uses: actions/download-artifact@v6
+        with:
+          path: tests/WgConf.Tests
+          name: build-WgConf.Tests
+      - uses: actions/download-artifact@v6
+        with:
+          path: tests/WgConf.Amnezia.Tests
+          name: build-WgConf.Amnezia.Tests
+      - run: chmod +x tests/WgConf.Tests/WgConf.Tests tests/WgConf.Amnezia.Tests/WgConf.Amnezia.Tests
+      - run: >-
+          dotnet coverage collect
+          --output coverage/WgConf.Tests.cobertura.xml
+          --output-format cobertura
+          --log-level Verbose
+          "tests/WgConf.Tests/WgConf.Tests"
+      - uses: actions/upload-artifact@v6
+        with:
+          path: coverage/WgConf.Tests.cobertura.xml
+          name: coverage-cobertura-WgConf.Tests
+      - run: >-
+          dotnet coverage collect
+          --output coverage/WgConf.Amnezia.Tests.cobertura.xml
+          --output-format cobertura
+          --log-level Verbose
+          "tests/WgConf.Amnezia.Tests/WgConf.Amnezia.Tests"
+      - uses: actions/upload-artifact@v6
+        with:
+          path: coverage/WgConf.Amnezia.Tests.cobertura.xml
+          name: coverage-cobertura-WgConf.Amnezia.Tests
+      - run: >-
+          reportgenerator
+          "-reports:coverage/WgConf.Tests.cobertura.xml;coverage/WgConf.Amnezia.Tests.cobertura.xml"
+          -targetdir:coverage/html-report
+          -reporttypes:Html
+      - uses: actions/upload-artifact@v6
+        with:
+          path: coverage/html-report
+          name: coverage-html-combined

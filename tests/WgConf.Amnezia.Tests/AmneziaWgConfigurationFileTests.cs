@@ -61,9 +61,16 @@ public class AmneziaWgConfigurationFileTests
         var tempFile = Path.GetTempFileName();
         try
         {
-            await File.WriteAllTextAsync(tempFile, ConfigText);
+            await File.WriteAllTextAsync(
+                tempFile,
+                ConfigText,
+                TestContext.Current.CancellationToken
+            );
 
-            var config = await AmneziaWgConfiguration.LoadAsync(tempFile);
+            var config = await AmneziaWgConfiguration.LoadAsync(
+                tempFile,
+                TestContext.Current.CancellationToken
+            );
 
             Assert.NotNull(config);
             Assert.Equal(5, config.Jc);
@@ -99,9 +106,9 @@ public class AmneziaWgConfigurationFileTests
         var tempFile = Path.GetTempFileName();
         try
         {
-            await config.SaveAsync(tempFile);
+            await config.SaveAsync(tempFile, TestContext.Current.CancellationToken);
 
-            var text = await File.ReadAllTextAsync(tempFile);
+            var text = await File.ReadAllTextAsync(tempFile, TestContext.Current.CancellationToken);
             Assert.Contains("Jc = 5", text);
         }
         finally

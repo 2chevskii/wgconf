@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+
+if ! dotnet csharpier check .; then
+  echo "CSharpier check failed."
+  echo "Run: dotnet csharpier format ."
+  exit 1
+fi

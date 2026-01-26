@@ -1,18 +1,9 @@
 <Project>
   <PropertyGroup>
-    <!-- Enable central package management, https://learn.microsoft.com/en-us/nuget/consume-packages/Central-Package-Management -->
     <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
   </PropertyGroup>
   <ItemGroup>
-    <!-- Testing -->
-    <PackageVersion Include="coverlet.msbuild" Version="6.0.4" />
-    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.0.1" />
-    <PackageVersion Include="xunit" Version="2.9.3" />
-    <PackageVersion Include="xunit.runner.visualstudio" Version="3.1.5" />
-    <!-- Build and versioning -->
-    <PackageVersion Include="GitVersion.MsBuild" Version="6.2.0" />
-    <PackageVersion Include="Microsoft.SourceLink.GitHub" Version="8.0.0" />
-    <!-- Coverage reporting (CI tool) -->
-    <PackageVersion Include="ReportGenerator" Version="5.4.3" />
+    <PackageVersion Include="xunit.v3.mtp-v2" Version="3.2.2" />
+    <PackageVersion Include="Microsoft.SourceLink.GitHub" Version="10.0.102" />
   </ItemGroup>
 </Project>

@@ -2,4 +2,8 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\WgConf.Amnezia\WgConf.Amnezia.csproj" />
   </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="xunit.v3.mtp-v2" />
+  </ItemGroup>
 </Project>

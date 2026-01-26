@@ -358,8 +358,8 @@ Jc = 5
 PublicKey = xTIBA5rboUvnH4htodjb6e697QjLERt1NAB4mZqp8Dg=
 AllowedIPs = 10.0.0.2/32";
 
-        using var reader = new AmneziaWgConfigurationReader(new StringReader(config));
-        var result = await reader.ReadAsync();
+        await using var reader = new AmneziaWgConfigurationReader(new StringReader(config));
+        var result = await reader.ReadAsync(TestContext.Current.CancellationToken);
 
         Assert.Equal(5, result.Jc);
     }
@@ -378,8 +378,9 @@ Jmin = abc
 PublicKey = xTIBA5rboUvnH4htodjb6e697QjLERt1NAB4mZqp8Dg=
 AllowedIPs = 10.0.0.2/32";
 
-        using var reader = new AmneziaWgConfigurationReader(new StringReader(config));
-        var (result, errors) = await reader.TryReadAsync();
+        await using var reader = new AmneziaWgConfigurationReader(new StringReader(config));
+        (AmneziaWgConfiguration? result, IReadOnlyList<ParseError> errors) =
+            await reader.TryReadAsync(TestContext.Current.CancellationToken);
 
         Assert.Null(result);
         Assert.NotEmpty(errors);

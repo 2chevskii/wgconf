@@ -1,6 +1,6 @@
+using System.Linq;
 using System.Net.Sockets;
 using System.Reflection;
-using System.Linq;
 
 namespace WgConf.Tests;
 
@@ -53,8 +53,10 @@ public class AddressFamilyExtensionsTests
         var method = type!
             .GetMethods(BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic)
             .Single(m =>
-                (m.Name.Equals(nameFragment, StringComparison.Ordinal)
-                    || m.Name.Equals($"get_{nameFragment}", StringComparison.Ordinal))
+                (
+                    m.Name.Equals(nameFragment, StringComparison.Ordinal)
+                    || m.Name.Equals($"get_{nameFragment}", StringComparison.Ordinal)
+                )
                 && m.GetParameters().Length == 1
             );
 

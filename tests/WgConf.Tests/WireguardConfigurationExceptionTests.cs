@@ -13,11 +13,7 @@ public class WireguardConfigurationExceptionTests
     [Fact]
     public void BuildMessage_MultipleErrors_FormatsEachError()
     {
-        var errors = new[]
-        {
-            new ParseError(1, "First error"),
-            new ParseError(2, "Second error"),
-        };
+        var errors = new[] { new ParseError(1, "First error"), new ParseError(2, "Second error") };
 
         var exception = new WireguardConfigurationException(errors);
 
