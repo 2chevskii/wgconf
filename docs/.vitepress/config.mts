@@ -8,21 +8,57 @@ export default defineConfig({
     // https://vitepress.dev/reference/default-theme-config
     nav: [
       { text: 'Home', link: '/' },
-      { text: 'Examples', link: '/markdown-examples' }
+      { text: 'Guide', link: '/guide/getting-started' },
+      { text: 'Reference', link: '/reference/core-types' },
+      { text: 'Formats', link: '/formats/wireguard' }
     ],
 
-    sidebar: [
-      {
-        text: 'Examples',
-        items: [
-          { text: 'Markdown Examples', link: '/markdown-examples' },
-          { text: 'Runtime API Examples', link: '/api-examples' }
-        ]
-      }
-    ],
+    sidebar: {
+      '/guide/': [
+        {
+          text: 'Guide',
+          items: [
+            { text: 'Getting Started', link: '/guide/getting-started' },
+            { text: 'Configuration Model', link: '/guide/configuration-model' },
+            { text: 'Parsing and Writing', link: '/guide/parsing-writing' },
+            { text: 'Error Handling', link: '/guide/error-handling' }
+          ]
+        }
+      ],
+      '/reference/': [
+        {
+          text: 'Reference',
+          items: [
+            { text: 'Core Types', link: '/reference/core-types' },
+            { text: 'Value Types', link: '/reference/value-types' },
+            { text: 'Readers and Writers', link: '/reference/readers-writers' },
+            { text: 'AmneziaWG Extension', link: '/reference/amnezia' }
+          ]
+        }
+      ],
+      '/formats/': [
+        {
+          text: 'Formats',
+          items: [
+            { text: 'WireGuard', link: '/formats/wireguard' },
+            { text: 'AmneziaWG', link: '/formats/amneziawg' }
+          ]
+        }
+      ],
+      '/': [
+        {
+          text: 'Start',
+          items: [
+            { text: 'Overview', link: '/' },
+            { text: 'Getting Started', link: '/guide/getting-started' },
+            { text: 'WireGuard Format', link: '/formats/wireguard' }
+          ]
+        }
+      ]
+    },
 
     socialLinks: [
-      { icon: 'github', link: 'https://github.com/vuejs/vitepress' }
+      { icon: 'github', link: 'https://github.com/2chevskii/wgconf' }
     ]
   }
 })
