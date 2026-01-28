@@ -2,16 +2,37 @@ using System.Net;
 
 namespace WgConf;
 
+/// <summary>
+/// Represents a WireGuard endpoint in host:port form.
+/// </summary>
 public readonly struct WireguardEndpoint
 {
+    /// <summary>
+    /// Gets the endpoint host.
+    /// </summary>
     public required string Host { get; init; }
+
+    /// <summary>
+    /// Gets the endpoint port.
+    /// </summary>
     public required int Port { get; init; }
 
+    /// <summary>
+    /// Parses an endpoint from a character span.
+    /// </summary>
+    /// <param name="input">The input in <c>host:port</c> format.</param>
     public static implicit operator WireguardEndpoint(ReadOnlySpan<char> input)
     {
         return Parse(input);
     }
 
+    /// <summary>
+    /// Attempts to parse an endpoint from a character span.
+    /// </summary>
+    /// <param name="input">The input in <c>host:port</c> format.</param>
+    /// <param name="result">The parsed endpoint when successful.</param>
+    /// <param name="exception">The parsing exception when unsuccessful.</param>
+    /// <returns><see langword="true"/> when parsing succeeds; otherwise <see langword="false"/>.</returns>
     public static bool TryParse(
         ReadOnlySpan<char> input,
         out WireguardEndpoint result,
@@ -25,6 +46,12 @@ public readonly struct WireguardEndpoint
         return exception == null;
     }
 
+    /// <summary>
+    /// Parses an endpoint from a character span.
+    /// </summary>
+    /// <param name="input">The input in <c>host:port</c> format.</param>
+    /// <returns>The parsed endpoint.</returns>
+    /// <exception cref="FormatException">Thrown when the input is invalid.</exception>
     public static WireguardEndpoint Parse(ReadOnlySpan<char> input)
     {
         WireguardEndpoint result = default;
@@ -34,6 +61,12 @@ public readonly struct WireguardEndpoint
         return exception != null ? throw exception : result;
     }
 
+    /// <summary>
+    /// Parses an endpoint into the provided result and exception references.
+    /// </summary>
+    /// <param name="input">The input in <c>host:port</c> format.</param>
+    /// <param name="result">The parsed endpoint when successful.</param>
+    /// <param name="exception">The parsing exception when unsuccessful.</param>
     private static void ParseInternal(
         ReadOnlySpan<char> input,
         ref WireguardEndpoint result,
@@ -90,6 +123,10 @@ public readonly struct WireguardEndpoint
         result = new WireguardEndpoint { Host = host, Port = port };
     }
 
+    /// <summary>
+    /// Returns the endpoint in <c>host:port</c> format, with IPv6 hosts wrapped in brackets.
+    /// </summary>
+    /// <returns>The endpoint string.</returns>
     public override string ToString()
     {
         // If the host is an IPv6 address, wrap it in brackets

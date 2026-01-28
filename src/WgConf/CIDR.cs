@@ -3,14 +3,35 @@ using WgConf.Extensions;
 
 namespace WgConf;
 
+/// <summary>
+/// Represents a CIDR address with an IP address and prefix length.
+/// </summary>
 public readonly struct CIDR
 {
+    /// <summary>
+    /// Gets the IP address portion of the CIDR.
+    /// </summary>
     public required IPAddress Address { get; init; }
+
+    /// <summary>
+    /// Gets the prefix length portion of the CIDR.
+    /// </summary>
     public required int PrefixLength { get; init; }
 
     // public static implicit operator CIDR(string input) => Parse(input);
+    /// <summary>
+    /// Parses a CIDR value from a character span.
+    /// </summary>
+    /// <param name="input">The input in <c>address/prefix</c> format.</param>
     public static implicit operator CIDR(ReadOnlySpan<char> input) => Parse(input);
 
+    /// <summary>
+    /// Attempts to parse a CIDR value from a character span.
+    /// </summary>
+    /// <param name="input">The input in <c>address/prefix</c> format.</param>
+    /// <param name="result">The parsed CIDR when successful.</param>
+    /// <param name="exception">The parsing exception when unsuccessful.</param>
+    /// <returns><see langword="true"/> when parsing succeeds; otherwise <see langword="false"/>.</returns>
     public static bool TryParse(ReadOnlySpan<char> input, out CIDR result, out Exception? exception)
     {
         result = default;
@@ -20,6 +41,12 @@ public readonly struct CIDR
         return exception == null;
     }
 
+    /// <summary>
+    /// Parses a CIDR value from a character span.
+    /// </summary>
+    /// <param name="input">The input in <c>address/prefix</c> format.</param>
+    /// <returns>The parsed CIDR value.</returns>
+    /// <exception cref="FormatException">Thrown when the input is invalid.</exception>
     public static CIDR Parse(ReadOnlySpan<char> input)
     {
         CIDR result = default;
@@ -29,6 +56,12 @@ public readonly struct CIDR
         return exception != null ? throw exception : result;
     }
 
+    /// <summary>
+    /// Parses a CIDR value into the provided result and exception references.
+    /// </summary>
+    /// <param name="input">The input in <c>address/prefix</c> format.</param>
+    /// <param name="result">The parsed CIDR when successful.</param>
+    /// <param name="exception">The parsing exception when unsuccessful.</param>
     private static void ParseInternal(
         ReadOnlySpan<char> input,
         ref CIDR result,
@@ -70,5 +103,9 @@ public readonly struct CIDR
         result = new CIDR { Address = address, PrefixLength = prefixLength };
     }
 
+    /// <summary>
+    /// Returns the CIDR value in <c>address/prefix</c> format.
+    /// </summary>
+    /// <returns>The CIDR string.</returns>
     public override string ToString() => $"{Address}/{PrefixLength}";
 }

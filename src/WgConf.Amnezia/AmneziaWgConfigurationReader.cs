@@ -1,8 +1,17 @@
 namespace WgConf.Amnezia;
 
+/// <summary>
+/// Reads and parses Amnezia WireGuard configurations from a text reader.
+/// </summary>
+/// <param name="textReader">The reader that provides the configuration text.</param>
 public class AmneziaWgConfigurationReader(TextReader textReader)
     : WireguardConfigurationReader(textReader)
 {
+    /// <summary>
+    /// Determines whether a property name is valid for the [Interface] section.
+    /// </summary>
+    /// <param name="propertyName">The property name to validate.</param>
+    /// <returns><see langword="true"/> when the property is valid; otherwise <see langword="false"/>.</returns>
     protected override bool IsValidInterfaceProperty(string propertyName)
     {
         if (base.IsValidInterfaceProperty(propertyName))
@@ -32,6 +41,14 @@ public class AmneziaWgConfigurationReader(TextReader textReader)
             || propertyName.Equals("H4", StringComparison.OrdinalIgnoreCase);
     }
 
+    /// <summary>
+    /// Builds an Amnezia configuration object from parsed properties.
+    /// </summary>
+    /// <param name="interfaceProps">Parsed interface properties.</param>
+    /// <param name="peers">Parsed peer property dictionaries.</param>
+    /// <param name="allLines">All lines from the configuration file.</param>
+    /// <param name="errors">The error list to populate.</param>
+    /// <returns>The built configuration.</returns>
     protected override WireguardConfiguration BuildConfiguration(
         Dictionary<string, string> interfaceProps,
         List<Dictionary<string, string>> peers,
@@ -241,11 +258,26 @@ public class AmneziaWgConfigurationReader(TextReader textReader)
         return amneziaConfig;
     }
 
+    /// <summary>
+    /// Reads and parses an Amnezia configuration, throwing when errors are encountered.
+    /// </summary>
+    /// <returns>The parsed configuration.</returns>
+    /// <exception cref="WireguardConfigurationException">
+    /// Thrown when parsing fails and errors are encountered.
+    /// </exception>
     public new AmneziaWgConfiguration Read()
     {
         return (AmneziaWgConfiguration)base.Read();
     }
 
+    /// <summary>
+    /// Asynchronously reads and parses an Amnezia configuration, throwing when errors are encountered.
+    /// </summary>
+    /// <param name="cancellationToken">The token to cancel the operation.</param>
+    /// <returns>The parsed configuration.</returns>
+    /// <exception cref="WireguardConfigurationException">
+    /// Thrown when parsing fails and errors are encountered.
+    /// </exception>
     public new async Task<AmneziaWgConfiguration> ReadAsync(
         CancellationToken cancellationToken = default
     )
@@ -253,6 +285,12 @@ public class AmneziaWgConfigurationReader(TextReader textReader)
         return (AmneziaWgConfiguration)await base.ReadAsync(cancellationToken);
     }
 
+    /// <summary>
+    /// Attempts to read and parse an Amnezia configuration from the underlying reader.
+    /// </summary>
+    /// <param name="configuration">The parsed configuration when successful; otherwise null.</param>
+    /// <param name="errors">The list of parse errors encountered.</param>
+    /// <returns><see langword="true"/> when parsing succeeds; otherwise <see langword="false"/>.</returns>
     public bool TryRead(
         out AmneziaWgConfiguration? configuration,
         out IReadOnlyList<ParseError> errors
@@ -263,6 +301,13 @@ public class AmneziaWgConfigurationReader(TextReader textReader)
         return result;
     }
 
+    /// <summary>
+    /// Asynchronously attempts to read and parse an Amnezia configuration.
+    /// </summary>
+    /// <param name="cancellationToken">The token to cancel the operation.</param>
+    /// <returns>
+    /// A tuple containing the parsed configuration (when successful) and the list of errors.
+    /// </returns>
     public new async Task<(
         AmneziaWgConfiguration? Configuration,
         IReadOnlyList<ParseError> Errors

@@ -2,9 +2,17 @@ using WgConf.Extensions;
 
 namespace WgConf.Amnezia;
 
+/// <summary>
+/// Writes Amnezia WireGuard configurations to a text writer.
+/// </summary>
+/// <param name="textWriter">The writer that receives the configuration text.</param>
 public class AmneziaWgConfigurationWriter(TextWriter textWriter)
     : WireguardConfigurationWriter(textWriter)
 {
+    /// <summary>
+    /// Writes the [Interface] section including Amnezia-specific properties.
+    /// </summary>
+    /// <param name="configuration">The configuration to write.</param>
     protected override void WriteInterface(WireguardConfiguration configuration)
     {
         base.WriteInterface(configuration);
@@ -34,11 +42,20 @@ public class AmneziaWgConfigurationWriter(TextWriter textWriter)
         }
     }
 
+    /// <summary>
+    /// Writes an Amnezia WireGuard configuration to the underlying writer.
+    /// </summary>
+    /// <param name="configuration">The configuration to write.</param>
     public void Write(AmneziaWgConfiguration configuration)
     {
         base.Write(configuration);
     }
 
+    /// <summary>
+    /// Writes an integer property line without type inference.
+    /// </summary>
+    /// <param name="name">The property name.</param>
+    /// <param name="value">The property value.</param>
     private void WritePropertyDirect(string name, int value)
     {
         _textWriter.Write(name);
@@ -47,6 +64,11 @@ public class AmneziaWgConfigurationWriter(TextWriter textWriter)
         _textWriter.WriteLine();
     }
 
+    /// <summary>
+    /// Writes a string property line without type inference.
+    /// </summary>
+    /// <param name="name">The property name.</param>
+    /// <param name="value">The property value.</param>
     private void WritePropertyDirect(string name, string value)
     {
         _textWriter.Write(name);

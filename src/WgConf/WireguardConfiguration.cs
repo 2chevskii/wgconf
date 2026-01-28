@@ -1,7 +1,13 @@
 ﻿namespace WgConf;
 
+/// <summary>
+/// Represents a WireGuard configuration.
+/// </summary>
 public class WireguardConfiguration
 {
+    /// <summary>
+    /// Gets or sets the private key for the interface.
+    /// </summary>
     public required byte[] PrivateKey
     {
         get;
@@ -12,6 +18,9 @@ public class WireguardConfiguration
                     : value;
     }
 
+    /// <summary>
+    /// Gets or sets the listen port for the interface.
+    /// </summary>
     public required ushort ListenPort
     {
         get;
@@ -24,21 +33,57 @@ public class WireguardConfiguration
                     : value;
     }
 
+    /// <summary>
+    /// Gets or sets the interface address in CIDR notation.
+    /// </summary>
     public required CIDR Address { get; set; }
 
+    /// <summary>
+    /// Gets or sets the command executed before the interface is brought up.
+    /// </summary>
     public string? PreUp { get; set; }
+
+    /// <summary>
+    /// Gets or sets the command executed after the interface is brought up.
+    /// </summary>
     public string? PostUp { get; set; }
+
+    /// <summary>
+    /// Gets or sets the command executed before the interface is brought down.
+    /// </summary>
     public string? PreDown { get; set; }
+
+    /// <summary>
+    /// Gets or sets the command executed after the interface is brought down.
+    /// </summary>
     public string? PostDown { get; set; }
 
+    /// <summary>
+    /// Gets the list of peer configurations.
+    /// </summary>
     public List<WireguardPeerConfiguration> Peers { get; } = [];
 
+    /// <summary>
+    /// Parses a WireGuard configuration from a string.
+    /// </summary>
+    /// <param name="text">The configuration text to parse.</param>
+    /// <returns>The parsed configuration.</returns>
+    /// <exception cref="WireguardConfigurationException">
+    /// Thrown when parsing fails and errors are encountered.
+    /// </exception>
     public static WireguardConfiguration Parse(string text)
     {
         using var reader = new WireguardConfigurationReader(new StringReader(text));
         return reader.Read();
     }
 
+    /// <summary>
+    /// Attempts to parse a WireGuard configuration from a string.
+    /// </summary>
+    /// <param name="text">The configuration text to parse.</param>
+    /// <param name="configuration">The parsed configuration when successful; otherwise null.</param>
+    /// <param name="errors">The list of parse errors encountered.</param>
+    /// <returns><see langword="true"/> when parsing succeeds; otherwise <see langword="false"/>.</returns>
     public static bool TryParse(
         string text,
         out WireguardConfiguration? configuration,
@@ -49,12 +94,29 @@ public class WireguardConfiguration
         return reader.TryRead(out configuration, out errors);
     }
 
+    /// <summary>
+    /// Loads a WireGuard configuration from a file.
+    /// </summary>
+    /// <param name="path">The path to the configuration file.</param>
+    /// <returns>The parsed configuration.</returns>
+    /// <exception cref="WireguardConfigurationException">
+    /// Thrown when parsing fails and errors are encountered.
+    /// </exception>
     public static WireguardConfiguration Load(string path)
     {
         using var reader = new WireguardConfigurationReader(new StreamReader(path));
         return reader.Read();
     }
 
+    /// <summary>
+    /// Asynchronously loads a WireGuard configuration from a file.
+    /// </summary>
+    /// <param name="path">The path to the configuration file.</param>
+    /// <param name="cancellationToken">The token to cancel the operation.</param>
+    /// <returns>The parsed configuration.</returns>
+    /// <exception cref="WireguardConfigurationException">
+    /// Thrown when parsing fails and errors are encountered.
+    /// </exception>
     public static async Task<WireguardConfiguration> LoadAsync(
         string path,
         CancellationToken cancellationToken = default
@@ -64,12 +126,21 @@ public class WireguardConfiguration
         return Parse(text);
     }
 
+    /// <summary>
+    /// Saves the configuration to a file.
+    /// </summary>
+    /// <param name="path">The path to write the configuration file to.</param>
     public void Save(string path)
     {
         using var writer = new WireguardConfigurationWriter(new StreamWriter(path));
         writer.Write(this);
     }
 
+    /// <summary>
+    /// Asynchronously saves the configuration to a file.
+    /// </summary>
+    /// <param name="path">The path to write the configuration file to.</param>
+    /// <param name="cancellationToken">The token to cancel the operation.</param>
     public async Task SaveAsync(string path, CancellationToken cancellationToken = default)
     {
         await using var stream = new FileStream(

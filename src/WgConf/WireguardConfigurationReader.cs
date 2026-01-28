@@ -2,15 +2,29 @@
 
 namespace WgConf;
 
+/// <summary>
+/// Reads and parses WireGuard configurations from a text reader.
+/// </summary>
+/// <param name="textReader">The reader that provides the configuration text.</param>
 public class WireguardConfigurationReader(TextReader textReader) : IDisposable, IAsyncDisposable
 {
+    /// <summary>
+    /// The underlying text reader.
+    /// </summary>
     protected readonly TextReader _textReader = textReader;
 
+    /// <summary>
+    /// Disposes the underlying text reader.
+    /// </summary>
     public void Dispose()
     {
         _textReader.Dispose();
     }
 
+    /// <summary>
+    /// Asynchronously disposes the underlying text reader when supported.
+    /// </summary>
+    /// <returns>A task representing the asynchronous dispose operation.</returns>
     public async ValueTask DisposeAsync()
     {
         if (_textReader is IAsyncDisposable asyncDisposable)
@@ -23,6 +37,13 @@ public class WireguardConfigurationReader(TextReader textReader) : IDisposable, 
         }
     }
 
+    /// <summary>
+    /// Reads and parses a WireGuard configuration, throwing when errors are encountered.
+    /// </summary>
+    /// <returns>The parsed configuration.</returns>
+    /// <exception cref="WireguardConfigurationException">
+    /// Thrown when parsing fails and errors are encountered.
+    /// </exception>
     public virtual WireguardConfiguration Read()
     {
         if (TryRead(out var config, out var errors))
@@ -33,6 +54,14 @@ public class WireguardConfigurationReader(TextReader textReader) : IDisposable, 
         throw new WireguardConfigurationException(errors);
     }
 
+    /// <summary>
+    /// Asynchronously reads and parses a WireGuard configuration, throwing when errors are encountered.
+    /// </summary>
+    /// <param name="cancellationToken">The token to cancel the operation.</param>
+    /// <returns>The parsed configuration.</returns>
+    /// <exception cref="WireguardConfigurationException">
+    /// Thrown when parsing fails and errors are encountered.
+    /// </exception>
     public virtual async Task<WireguardConfiguration> ReadAsync(
         CancellationToken cancellationToken = default
     )
@@ -46,6 +75,12 @@ public class WireguardConfigurationReader(TextReader textReader) : IDisposable, 
         throw new WireguardConfigurationException(errors);
     }
 
+    /// <summary>
+    /// Attempts to read and parse a WireGuard configuration from the underlying reader.
+    /// </summary>
+    /// <param name="configuration">The parsed configuration when successful; otherwise null.</param>
+    /// <param name="errors">The list of parse errors encountered.</param>
+    /// <returns><see langword="true"/> when parsing succeeds; otherwise <see langword="false"/>.</returns>
     public bool TryRead(
         out WireguardConfiguration? configuration,
         out IReadOnlyList<ParseError> errors
@@ -65,6 +100,13 @@ public class WireguardConfigurationReader(TextReader textReader) : IDisposable, 
         return ProcessLines(allLines, lineNumber, errorList, out configuration, out errors);
     }
 
+    /// <summary>
+    /// Asynchronously attempts to read and parse a WireGuard configuration.
+    /// </summary>
+    /// <param name="cancellationToken">The token to cancel the operation.</param>
+    /// <returns>
+    /// A tuple containing the parsed configuration (when successful) and the list of errors.
+    /// </returns>
     public async Task<(
         WireguardConfiguration? Configuration,
         IReadOnlyList<ParseError> Errors
@@ -85,6 +127,15 @@ public class WireguardConfigurationReader(TextReader textReader) : IDisposable, 
         return (configuration, errors);
     }
 
+    /// <summary>
+    /// Processes lines to build a configuration and collects parse errors.
+    /// </summary>
+    /// <param name="allLines">All lines from the configuration file.</param>
+    /// <param name="lineNumber">The last processed line number.</param>
+    /// <param name="errorList">The error list to populate.</param>
+    /// <param name="configuration">The resulting configuration when successful.</param>
+    /// <param name="errors">The error list returned to the caller.</param>
+    /// <returns><see langword="true"/> when parsing succeeds; otherwise <see langword="false"/>.</returns>
     private bool ProcessLines(
         List<string> allLines,
         int lineNumber,
@@ -120,6 +171,12 @@ public class WireguardConfigurationReader(TextReader textReader) : IDisposable, 
         }
     }
 
+    /// <summary>
+    /// Parses the configuration lines into a WireGuard configuration object.
+    /// </summary>
+    /// <param name="allLines">All lines from the configuration file.</param>
+    /// <param name="errors">The error list to populate.</param>
+    /// <returns>The parsed configuration.</returns>
     private WireguardConfiguration ParseConfiguration(
         List<string> allLines,
         List<ParseError> errors
@@ -282,6 +339,14 @@ public class WireguardConfigurationReader(TextReader textReader) : IDisposable, 
         return config;
     }
 
+    /// <summary>
+    /// Builds the configuration object from parsed interface and peer properties.
+    /// </summary>
+    /// <param name="interfaceProps">Parsed interface properties.</param>
+    /// <param name="peers">Parsed peer property dictionaries.</param>
+    /// <param name="allLines">All lines from the configuration file.</param>
+    /// <param name="errors">The error list to populate.</param>
+    /// <returns>The built configuration.</returns>
     protected virtual WireguardConfiguration BuildConfiguration(
         Dictionary<string, string> interfaceProps,
         List<Dictionary<string, string>> peers,
@@ -328,6 +393,13 @@ public class WireguardConfigurationReader(TextReader textReader) : IDisposable, 
         return config;
     }
 
+    /// <summary>
+    /// Builds a peer configuration from parsed properties.
+    /// </summary>
+    /// <param name="peerProps">Parsed peer properties.</param>
+    /// <param name="allLines">All lines from the configuration file.</param>
+    /// <param name="errors">The error list to populate.</param>
+    /// <returns>The built peer configuration, or null when invalid.</returns>
     protected virtual WireguardPeerConfiguration? BuildPeer(
         Dictionary<string, string> peerProps,
         List<string> allLines,
@@ -412,6 +484,13 @@ public class WireguardConfigurationReader(TextReader textReader) : IDisposable, 
         }
     }
 
+    /// <summary>
+    /// Parses the PrivateKey property.
+    /// </summary>
+    /// <param name="props">Interface properties.</param>
+    /// <param name="allLines">All lines from the configuration file.</param>
+    /// <param name="errors">The error list to populate.</param>
+    /// <returns>The parsed private key bytes.</returns>
     private byte[] ParsePrivateKey(
         Dictionary<string, string> props,
         List<string> allLines,
@@ -451,6 +530,13 @@ public class WireguardConfigurationReader(TextReader textReader) : IDisposable, 
         }
     }
 
+    /// <summary>
+    /// Parses the ListenPort property.
+    /// </summary>
+    /// <param name="props">Interface properties.</param>
+    /// <param name="allLines">All lines from the configuration file.</param>
+    /// <param name="errors">The error list to populate.</param>
+    /// <returns>The parsed listen port.</returns>
     private ushort ParseListenPort(
         Dictionary<string, string> props,
         List<string> allLines,
@@ -488,6 +574,13 @@ public class WireguardConfigurationReader(TextReader textReader) : IDisposable, 
         return WireguardConfiguration.Constants.PORT_MIN;
     }
 
+    /// <summary>
+    /// Parses the Address property.
+    /// </summary>
+    /// <param name="props">Interface properties.</param>
+    /// <param name="allLines">All lines from the configuration file.</param>
+    /// <param name="errors">The error list to populate.</param>
+    /// <returns>The parsed CIDR address.</returns>
     private CIDR ParseAddress(
         Dictionary<string, string> props,
         List<string> allLines,
@@ -513,6 +606,13 @@ public class WireguardConfigurationReader(TextReader textReader) : IDisposable, 
         }
     }
 
+    /// <summary>
+    /// Parses the PublicKey property.
+    /// </summary>
+    /// <param name="props">Peer properties.</param>
+    /// <param name="allLines">All lines from the configuration file.</param>
+    /// <param name="errors">The error list to populate.</param>
+    /// <returns>The parsed public key bytes.</returns>
     private byte[] ParsePublicKey(
         Dictionary<string, string> props,
         List<string> allLines,
@@ -551,6 +651,13 @@ public class WireguardConfigurationReader(TextReader textReader) : IDisposable, 
         }
     }
 
+    /// <summary>
+    /// Parses the AllowedIPs property.
+    /// </summary>
+    /// <param name="props">Peer properties.</param>
+    /// <param name="allLines">All lines from the configuration file.</param>
+    /// <param name="errors">The error list to populate.</param>
+    /// <returns>The parsed list of CIDR entries.</returns>
     private List<CIDR> ParseAllowedIPs(
         Dictionary<string, string> props,
         List<string> allLines,
@@ -589,12 +696,23 @@ public class WireguardConfigurationReader(TextReader textReader) : IDisposable, 
         return cidrs.ToList();
     }
 
+    /// <summary>
+    /// Removes inline comments from a configuration line.
+    /// </summary>
+    /// <param name="line">The original line.</param>
+    /// <returns>The line with comments removed.</returns>
     private static string StripComments(string line)
     {
         var commentIndex = line.IndexOf('#');
         return commentIndex >= 0 ? line[..commentIndex] : line;
     }
 
+    /// <summary>
+    /// Returns the surrounding lines for context in error reporting.
+    /// </summary>
+    /// <param name="allLines">All lines from the configuration file.</param>
+    /// <param name="currentIndex">The current zero-based line index.</param>
+    /// <returns>The surrounding context lines.</returns>
     private static string[] GetSurroundingLines(List<string> allLines, int currentIndex)
     {
         const int contextLines = 2;
@@ -611,6 +729,11 @@ public class WireguardConfigurationReader(TextReader textReader) : IDisposable, 
         return result;
     }
 
+    /// <summary>
+    /// Determines whether a property name is valid for the [Interface] section.
+    /// </summary>
+    /// <param name="propertyName">The property name to validate.</param>
+    /// <returns><see langword="true"/> when the property is valid; otherwise <see langword="false"/>.</returns>
     protected virtual bool IsValidInterfaceProperty(string propertyName)
     {
         return propertyName.Equals("PrivateKey", StringComparison.OrdinalIgnoreCase)
@@ -622,6 +745,11 @@ public class WireguardConfigurationReader(TextReader textReader) : IDisposable, 
             || propertyName.Equals("PostDown", StringComparison.OrdinalIgnoreCase);
     }
 
+    /// <summary>
+    /// Determines whether a property name is valid for the [Peer] section.
+    /// </summary>
+    /// <param name="propertyName">The property name to validate.</param>
+    /// <returns><see langword="true"/> when the property is valid; otherwise <see langword="false"/>.</returns>
     protected virtual bool IsValidPeerProperty(string propertyName)
     {
         return propertyName.Equals("PublicKey", StringComparison.OrdinalIgnoreCase)
