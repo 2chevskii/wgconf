@@ -35,9 +35,36 @@ jobs:
         with:
           path: artifacts/tests/WgConf.Amnezia.Tests
           name: build-WgConf.Amnezia.Tests
+      - run: >-
+          dotnet pack
+          --no-restore
+          --no-build
+          --configuration Release
+          --output artifacts/packages
+          src/WgConf/WgConf.csproj
+      - uses: actions/upload-artifact@v6
+        with:
+          path: artifacts/packages/WgConf.*.*nupkg
+          name: pkg-WgConf
+      - run: >-
+          dotnet pack
+          --no-restore
+          --no-build
+          --configuration Release
+          --output artifacts/packages
+          src/WgConf.Amnezia/WgConf.Amnezia.csproj
+      - uses: actions/upload-artifact@v6
+        with:
+          path: artifacts/packages/WgConf.Amnezia.*.*nupkg
+          name: pkg-WgConf.Amnezia
   test:
     runs-on: ubuntu-latest
     needs: build
+    permissions:
+      actions: read
+      contents: read
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     strategy:
       fail-fast: false
       matrix:
@@ -66,6 +93,15 @@ jobs:
         with:
           path: test_results/${{ matrix.test-project }}/report.html
           name: test-results-html-${{ matrix.test-project }}
+      - uses: ctrf-io/github-test-reporter@v1
+        with:
+          report-path: test_results/${{ matrix.test-project }}/report.json
+          artifact-name: test-results-ctrf-${{ matrix.test-project }}
+          fetch-previous-results: true
+          upload-artifact: false
+          github-report: true
+          summary: true
+          summary-report: true
   coverage:
     runs-on: ubuntu-latest
     needs: build
@@ -109,7 +145,8 @@ jobs:
         with:
           path: coverage/WgConf.Amnezia.Tests.cobertura.xml
           name: coverage-cobertura-WgConf.Amnezia.Tests
-      - run: >-
+      - name: Generate HTML coverage report
+        run: >-
           reportgenerator
           "-reports:coverage/WgConf.Tests.cobertura.xml;coverage/WgConf.Amnezia.Tests.cobertura.xml"
           -targetdir:coverage/html-report
@@ -118,3 +155,107 @@ jobs:
         with:
           path: coverage/html-report
           name: coverage-html-combined
+      - name: Generate JSON summary
+        run: >-
+          reportgenerator
+          "-reports:coverage/WgConf.Tests.cobertura.xml;coverage/WgConf.Amnezia.Tests.cobertura.xml"
+          -targetdir:coverage/json-summary
+          -reporttypes:JsonSummary
+      - name: Generate Markdown summary for job log
+        run: >-
+          reportgenerator
+          "-reports:coverage/WgConf.Tests.cobertura.xml;coverage/WgConf.Amnezia.Tests.cobertura.xml"
+          -targetdir:coverage/markdown-summary
+          -reporttypes:MarkdownSummaryGithub
+      - name: Append coverage summary to job summary
+        run: |
+          set -euo pipefail
+          if [ -f coverage/markdown-summary/SummaryGithub.md ]; then
+            SUMMARY_MD=coverage/markdown-summary/SummaryGithub.md
+          elif [ -f coverage/markdown-summary/summarygithub.md ]; then
+            SUMMARY_MD=coverage/markdown-summary/summarygithub.md
+          elif [ -f coverage/markdown-summary/summary.md ]; then
+            SUMMARY_MD=coverage/markdown-summary/summary.md
+          else
+            echo "Markdown summary not found in coverage/markdown-summary"
+            ls coverage/markdown-summary
+            exit 1
+          fi
+
+          {
+            echo "## Combined Coverage Summary"
+            cat "$SUMMARY_MD"
+          } >> "$GITHUB_STEP_SUMMARY"
+      - name: Enforce coverage thresholds
+        run: |
+          set -euo pipefail
+          if [ -f coverage/json-summary/Summary.json ]; then
+            SUMMARY_PATH=coverage/json-summary/Summary.json
+          elif [ -f coverage/json-summary/summary.json ]; then
+            SUMMARY_PATH=coverage/json-summary/summary.json
+          else
+            echo "Coverage summary JSON not found in coverage/json-summary"
+            ls coverage/json-summary
+            exit 1
+          fi
+
+          export SUMMARY_PATH
+          python3 - <<'PY'
+          import json, os, sys
+
+          def coerce_num(val):
+            try:
+              return float(val)
+            except (TypeError, ValueError):
+              return None
+
+          def pick(obj, *keys):
+            for key in keys:
+              if isinstance(obj, dict) and key in obj:
+                num = coerce_num(obj[key])
+                if num is not None:
+                  return num
+            return None
+
+          path = os.environ["SUMMARY_PATH"]
+          with open(path) as f:
+            data = json.load(f)
+
+          # ReportGenerator JsonSummary keeps totals in `summary`
+          summary = data.get("summary") if isinstance(data, dict) else None
+          if not summary and isinstance(data, dict):
+            summary = data  # fallback: sometimes fields are at root
+
+          line = branch = None
+          line = pick(summary, "linecoverage", "lineCoverage", "line_coverage", "LineCoverage")
+          branch = pick(summary, "branchcoverage", "branchCoverage", "branch_coverage", "BranchCoverage")
+
+          if line is None and isinstance(summary, dict):
+            covered = pick(summary, "coveredlines", "coveredLines")
+            coverable = pick(summary, "coverablelines", "coverableLines")
+            if covered is not None and coverable not in (None, 0):
+              line = covered / coverable * 100
+
+          if branch is None and isinstance(summary, dict):
+            covered = pick(summary, "coveredbranches", "coveredBranches")
+            total = pick(summary, "totalbranches", "totalBranches")
+            if covered is not None and total is not None:
+              branch = 100.0 if total == 0 else covered / total * 100
+
+          if line is None or branch is None:
+            sys.exit("Coverage metrics missing in summary JSON")
+
+          print(f"Line coverage: {line:.2f}%")
+          print(f"Branch coverage: {branch:.2f}%")
+
+          failures = []
+          if line < 95:
+            failures.append(f"Line coverage {line:.2f}% is below required 95%")
+          if branch < 80:
+            failures.append(f"Branch coverage {branch:.2f}% is below required 80%")
+
+          if failures:
+            for msg in failures:
+              print(msg)
+            sys.exit(1)
+          PY
