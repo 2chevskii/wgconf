@@ -1,0 +1,18 @@
+{
+  "name": "@wgconf/docs",
+  "version": "1.0.0",
+  "description": "",
+  "private": true,
+  "scripts": {
+    "dev": "vitepress dev",
+    "build": "vitepress build",
+    "preview": "vitepress preview"
+  },
+  "keywords": [],
+  "author": "2CHEVSKII",
+  "license": "MIT",
+  "type": "module",
+  "devDependencies": {
+    "vitepress": "^2.0.0-alpha.15"
+  }
+}
