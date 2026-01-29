@@ -1,63 +1,82 @@
+name: "✨ WgConf CI"
+
 on: [push, pull_request]
 
 jobs:
   format:
+    name: "🎨 Format Check"
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
-      - run: dotnet tool restore
-      - run: dotnet csharpier check .
+      - name: "🧾 Checkout"
+        uses: actions/checkout@v6
+      - name: "🛠️ Restore Tools"
+        run: dotnet tool restore
+      - name: "🎯 CSharpier Check"
+        run: dotnet csharpier check .
   build:
+    name: "🏗️ Build & Package"
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
-      - run: dotnet restore
-      - run: dotnet build --no-restore --configuration Release WgConf.slnx
-      - run: >-
+      - name: "🧾 Checkout"
+        uses: actions/checkout@v6
+      - name: "📦 Restore Dependencies"
+        run: dotnet restore
+      - name: "🔨 Build Solution"
+        run: dotnet build --no-restore --configuration Release WgConf.slnx
+      - name: "🧪 Publish WgConf.Tests"
+        run: >-
           dotnet publish 
           --no-restore 
           --no-build 
           --configuration Release 
           --output artifacts/tests/WgConf.Tests
           tests/WgConf.Tests/WgConf.Tests.csproj
-      - uses: actions/upload-artifact@v6
+      - name: "📤 Upload WgConf.Tests"
+        uses: actions/upload-artifact@v6
         with:
           path: artifacts/tests/WgConf.Tests
           name: build-WgConf.Tests
-      - run: >-
+      - name: "🧪 Publish WgConf.Amnezia.Tests"
+        run: >-
           dotnet publish
           --no-restore
           --no-build
           --configuration Release
           --output artifacts/tests/WgConf.Amnezia.Tests
           tests/WgConf.Amnezia.Tests/WgConf.Amnezia.Tests.csproj
-      - uses: actions/upload-artifact@v6
+      - name: "📤 Upload WgConf.Amnezia.Tests"
+        uses: actions/upload-artifact@v6
         with:
           path: artifacts/tests/WgConf.Amnezia.Tests
           name: build-WgConf.Amnezia.Tests
-      - run: >-
+      - name: "📦 Pack WgConf"
+        run: >-
           dotnet pack
           --no-restore
           --no-build
           --configuration Release
           --output artifacts/packages
           src/WgConf/WgConf.csproj
-      - uses: actions/upload-artifact@v6
+      - name: "📤 Upload WgConf Package"
+        uses: actions/upload-artifact@v6
         with:
           path: artifacts/packages/WgConf.*.*nupkg
           name: pkg-WgConf
-      - run: >-
+      - name: "📦 Pack WgConf.Amnezia"
+        run: >-
           dotnet pack
           --no-restore
           --no-build
           --configuration Release
           --output artifacts/packages
           src/WgConf.Amnezia/WgConf.Amnezia.csproj
-      - uses: actions/upload-artifact@v6
+      - name: "📤 Upload WgConf.Amnezia Package"
+        uses: actions/upload-artifact@v6
         with:
           path: artifacts/packages/WgConf.Amnezia.*.*nupkg
           name: pkg-WgConf.Amnezia
   test:
+    name: "🧪 Test Matrix"
     runs-on: ubuntu-latest
     needs: build
     permissions:
@@ -72,12 +91,15 @@ jobs:
           - WgConf.Tests
           - WgConf.Amnezia.Tests
     steps:
-      - uses: actions/download-artifact@v7
+      - name: "📥 Download Build Artifact"
+        uses: actions/download-artifact@v7
         with:
           name: build-${{ matrix.test-project }}
           path: tests/${{ matrix.test-project }}
-      - run: chmod +x tests/${{ matrix.test-project }}/${{ matrix.test-project }}
-      - run: >-
+      - name: "🔐 Ensure Executable"
+        run: chmod +x tests/${{ matrix.test-project }}/${{ matrix.test-project }}
+      - name: "🏃 Run Tests"
+        run: >-
           ./tests/${{ matrix.test-project }}/${{ matrix.test-project }}
           --output Detailed
           --results-directory test_results/${{ matrix.test-project }}
@@ -85,15 +107,18 @@ jobs:
           --report-ctrf-filename report.json
           --report-xunit-html
           --report-xunit-html-filename report.html
-      - uses: actions/upload-artifact@v6
+      - name: "📤 Upload CTRF Report"
+        uses: actions/upload-artifact@v6
         with:
           path: test_results/${{ matrix.test-project }}/report.json
           name: test-results-ctrf-${{ matrix.test-project }}
-      - uses: actions/upload-artifact@v6
+      - name: "📤 Upload HTML Report"
+        uses: actions/upload-artifact@v6
         with:
           path: test_results/${{ matrix.test-project }}/report.html
           name: test-results-html-${{ matrix.test-project }}
-      - uses: ctrf-io/github-test-reporter@v1
+      - name: "🧾 Publish Test Summary"
+        uses: ctrf-io/github-test-reporter@v1
         with:
           report-path: test_results/${{ matrix.test-project }}/report.json
           artifact-name: test-results-ctrf-${{ matrix.test-project }}
@@ -103,71 +128,82 @@ jobs:
           summary: true
           summary-report: true
   coverage:
+    name: "📊 Coverage"
     runs-on: ubuntu-latest
     needs: build
     steps:
-      - run: >-
+      - name: "🛠️ Install dotnet-coverage"
+        run: >-
           dotnet tool install
           --global
           --verbosity normal
           dotnet-coverage
-      - run: >-
+      - name: "🛠️ Install ReportGenerator"
+        run: >-
           dotnet tool install
           --global
           --verbosity normal
           dotnet-reportgenerator-globaltool
-      - uses: actions/download-artifact@v6
+      - name: "📥 Download WgConf.Tests"
+        uses: actions/download-artifact@v6
         with:
           path: tests/WgConf.Tests
           name: build-WgConf.Tests
-      - uses: actions/download-artifact@v6
+      - name: "📥 Download WgConf.Amnezia.Tests"
+        uses: actions/download-artifact@v6
         with:
           path: tests/WgConf.Amnezia.Tests
           name: build-WgConf.Amnezia.Tests
-      - run: chmod +x tests/WgConf.Tests/WgConf.Tests tests/WgConf.Amnezia.Tests/WgConf.Amnezia.Tests
-      - run: >-
+      - name: "🔐 Ensure Executables"
+        run: chmod +x tests/WgConf.Tests/WgConf.Tests tests/WgConf.Amnezia.Tests/WgConf.Amnezia.Tests
+      - name: "🧪 Collect WgConf.Tests Coverage"
+        run: >-
           dotnet coverage collect
           --output coverage/WgConf.Tests.cobertura.xml
           --output-format cobertura
           --log-level Verbose
           "tests/WgConf.Tests/WgConf.Tests"
-      - uses: actions/upload-artifact@v6
+      - name: "📤 Upload WgConf.Tests Coverage"
+        uses: actions/upload-artifact@v6
         with:
           path: coverage/WgConf.Tests.cobertura.xml
           name: coverage-cobertura-WgConf.Tests
-      - run: >-
+      - name: "🧪 Collect WgConf.Amnezia.Tests Coverage"
+        run: >-
           dotnet coverage collect
           --output coverage/WgConf.Amnezia.Tests.cobertura.xml
           --output-format cobertura
           --log-level Verbose
           "tests/WgConf.Amnezia.Tests/WgConf.Amnezia.Tests"
-      - uses: actions/upload-artifact@v6
+      - name: "📤 Upload WgConf.Amnezia.Tests Coverage"
+        uses: actions/upload-artifact@v6
         with:
           path: coverage/WgConf.Amnezia.Tests.cobertura.xml
           name: coverage-cobertura-WgConf.Amnezia.Tests
-      - name: Generate HTML coverage report
+      - name: "📈 Generate HTML Coverage Report"
         run: >-
           reportgenerator
           "-reports:coverage/WgConf.Tests.cobertura.xml;coverage/WgConf.Amnezia.Tests.cobertura.xml"
           -targetdir:coverage/html-report
           -reporttypes:Html
-      - uses: actions/upload-artifact@v6
+      - name: "📤 Upload HTML Coverage Report"
+        uses: actions/upload-artifact@v6
         with:
           path: coverage/html-report
           name: coverage-html-combined
-      - name: Generate JSON summary
+      - name: "🧾 Generate JSON Summary"
         run: >-
           reportgenerator
           "-reports:coverage/WgConf.Tests.cobertura.xml;coverage/WgConf.Amnezia.Tests.cobertura.xml"
           -targetdir:coverage/json-summary
           -reporttypes:JsonSummary
-      - name: Generate Markdown summary for job log
+      - name: "🧾 Generate Markdown Summary"
         run: >-
           reportgenerator
           "-reports:coverage/WgConf.Tests.cobertura.xml;coverage/WgConf.Amnezia.Tests.cobertura.xml"
           -targetdir:coverage/markdown-summary
           -reporttypes:MarkdownSummaryGithub
-      - name: Append coverage summary to job summary
+      - name: "🧷 Append Summary to Job"
         run: |
           set -euo pipefail
           if [ -f coverage/markdown-summary/SummaryGithub.md ]; then
@@ -186,7 +222,7 @@ jobs:
             echo "## Combined Coverage Summary"
             cat "$SUMMARY_MD"
           } >> "$GITHUB_STEP_SUMMARY"
-      - name: Enforce coverage thresholds
+      - name: "✅ Enforce Coverage Thresholds"
         run: |
           set -euo pipefail
           if [ -f coverage/json-summary/Summary.json ]; then

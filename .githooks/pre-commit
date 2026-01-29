@@ -1,7 +1,19 @@
 #!/usr/bin/env bash
 
-if ! dotnet csharpier check .; then
-  echo "CSharpier check failed."
-  echo "Run: dotnet csharpier format ."
+set -euo pipefail
+
+BLUE='\033[0;34m'
+GREEN='\033[0;32m'
+YELLOW='\033[0;33m'
+RED='\033[0;31m'
+RESET='\033[0m'
+
+printf "%b\n" "${BLUE}[format] Running CSharpier check...${RESET}"
+
+if dotnet csharpier check .; then
+  printf "%b\n" "${GREEN}[format] OK - CSharpier check passed.${RESET}"
+else
+  printf "%b\n" "${RED}[format] FAIL - CSharpier check failed.${RESET}"
+  printf "%b\n" "${YELLOW}[format] Run: dotnet csharpier format .${RESET}"
   exit 1
 fi
