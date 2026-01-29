@@ -33,10 +33,10 @@ jobs:
 
           VERSION=$(python3 - <<'PY'
           import xml.etree.ElementTree as ET
-          root = ET.parse("Directory.Build.props").getroot()
+          root = ET.parse("Version.props").getroot()
           version = root.findtext(".//Version")
           if not version:
-              raise SystemExit("Version not found in Directory.Build.props")
+              raise SystemExit("Version not found in Version.props")
           print(version.strip())
           PY
           )
@@ -71,7 +71,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ~/.nuget/packages
-          key: nuget-${{ runner.os }}-${{ hashFiles('**/*.csproj', 'Directory.Packages.props', 'Directory.Build.props', 'global.json') }}
+          key: nuget-${{ runner.os }}-${{ hashFiles('**/*.csproj', 'Directory.Packages.props', 'Directory.Build.props', 'Version.props', 'global.json') }}
           restore-keys: |
             nuget-${{ runner.os }}-
       - name: "🛠️ Restore Tools"
@@ -90,7 +90,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ~/.nuget/packages
-          key: nuget-${{ runner.os }}-${{ hashFiles('**/*.csproj', 'Directory.Packages.props', 'Directory.Build.props', 'global.json') }}
+          key: nuget-${{ runner.os }}-${{ hashFiles('**/*.csproj', 'Directory.Packages.props', 'Directory.Build.props', 'Version.props', 'global.json') }}
           restore-keys: |
             nuget-${{ runner.os }}-
       - name: "📦 Restore Dependencies"
@@ -211,7 +211,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ~/.nuget/packages
-          key: nuget-${{ runner.os }}-${{ hashFiles('**/*.csproj', 'Directory.Packages.props', 'Directory.Build.props', 'global.json') }}
+          key: nuget-${{ runner.os }}-${{ hashFiles('**/*.csproj', 'Directory.Packages.props', 'Directory.Build.props', 'Version.props', 'global.json') }}
           restore-keys: |
             nuget-${{ runner.os }}-
       - name: "🛠️ Install dotnet-coverage"
