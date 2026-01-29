@@ -3,6 +3,7 @@
     <File Path="Directory.Build.props" />
     <File Path="Directory.Packages.props" />
     <File Path="global.json" />
+    <File Path="Version.props" />
   </Folder>
   <Folder Name="/misc/">
     <File Path=".editorconfig" />
