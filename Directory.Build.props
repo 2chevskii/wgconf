@@ -19,7 +19,7 @@
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
   </PropertyGroup>
 
-  <!-- Versioning (GitVersion will inject these) -->
+  <!-- Versioning (manual; must match release tag) -->
   <PropertyGroup>
     <Version>0.1.0</Version>
     <AssemblyVersion>0.1.0.0</AssemblyVersion>

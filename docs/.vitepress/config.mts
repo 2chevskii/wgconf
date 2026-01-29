@@ -4,6 +4,7 @@ import { defineConfig } from 'vitepress'
 export default defineConfig({
   title: "WgConf Documentation",
   description: "Documentation for WgConf and WgConf.Amnezia packages",
+  base: "/wgconf/",
   themeConfig: {
     // https://vitepress.dev/reference/default-theme-config
     nav: [

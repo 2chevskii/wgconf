@@ -1,0 +1,76 @@
+name: "✅ Finish Release"
+
+on:
+  release:
+    types:
+      - published
+
+concurrency:
+  group: release-finish-${{ github.event.release.tag_name }}
+  cancel-in-progress: false
+
+jobs:
+  publish_packages:
+    name: "📦 Publish Packages"
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    env:
+      NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - name: "🧾 Checkout"
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.release.tag_name }}
+      - name: "📥 Download Release Assets"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          mkdir -p artifacts/packages
+          gh release download "${{ github.event.release.tag_name }}" \
+            --pattern "*.nupkg" \
+            --pattern "*.snupkg" \
+            --dir artifacts/packages
+      - name: "🚀 Push to NuGet.org"
+        run: |
+          dotnet nuget push "artifacts/packages/*.nupkg" --source https://api.nuget.org/v3/index.json --api-key "$NUGET_API_KEY" --skip-duplicate
+          dotnet nuget push "artifacts/packages/*.snupkg" --source https://api.nuget.org/v3/index.json --api-key "$NUGET_API_KEY" --skip-duplicate
+      - name: "🚀 Push to GitHub Packages"
+        run: |
+          dotnet nuget push "artifacts/packages/*.nupkg" --source https://nuget.pkg.github.com/2chevskii/index.json --api-key "$GITHUB_TOKEN" --skip-duplicate
+          dotnet nuget push "artifacts/packages/*.snupkg" --source https://nuget.pkg.github.com/2chevskii/index.json --api-key "$GITHUB_TOKEN" --skip-duplicate
+
+  deploy_docs:
+    name: "📘 Deploy Docs"
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    steps:
+      - name: "🧾 Checkout"
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.release.tag_name }}
+      - name: "🟢 Setup Node"
+        uses: actions/setup-node@v4
+        with:
+          node-version: "latest"
+          cache: "npm"
+          cache-dependency-path: docs/package-lock.json
+      - name: "📦 Install Docs Dependencies"
+        run: npm ci
+        working-directory: docs
+      - name: "🛠️ Build Docs"
+        run: npm run build
+        working-directory: docs
+      - name: "⚙️ Configure Pages"
+        uses: actions/configure-pages@v5
+      - name: "📤 Upload Pages Artifact"
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: docs/.vitepress/dist
+      - name: "🚀 Deploy Pages"
+        uses: actions/deploy-pages@v4

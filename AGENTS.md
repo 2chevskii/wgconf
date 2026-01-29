@@ -141,10 +141,10 @@ Formatting:
 
 ## CI/CD and Versioning
 
-- GitVersion (Mainline/ContinuousDelivery) determines versions.
-- Commit messages can include `+semver: major|minor|patch|none`.
-- Release is tag-driven (`v1.2.3` tags publish to NuGet).
-- CI runs: build, formatting check, tests, coverage, pack/publish on tags.
+- Versions are set manually in `Directory.Build.props` (`Version` is authoritative).
+- Release tags are `vX.Y.Z` or `vX.Y.Z-prerelease` and must match `Version` on `master` tip.
+- Release is two-stage: `start_release.yaml` validates/builds/tests/coverage and creates a draft release with assets, `finish_release.yaml` publishes packages + docs after release is published.
+- CI runs: build, formatting check, tests, coverage on push/PR.
 
 ## Documentation Workflow
 
