@@ -5,29 +5,29 @@
 [![NuGet Downloads](https://img.shields.io/nuget/dt/WgConf.svg)](https://www.nuget.org/packages/WgConf/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-A .NET library for reading and writing **WireGuard** and **AmneziaWG** configuration files with strongly-typed models and comprehensive error handling.
+A .NET library for reading and writing WireGuard configuration files with strongly typed models, strict validation, and detailed error reporting. The WgConf.Amnezia package extends the core model with AmneziaWG obfuscation parameters while keeping the same API shape.
+
+## Packages
+
+- `WgConf` - Core WireGuard configuration reader and writer.
+- `WgConf.Amnezia` - Extension package that adds AmneziaWG properties to the `[Interface]` section.
 
 ## Features
 
-- **Strongly-typed models** for WireGuard configurations (Interface and Peer sections)
-- **Reader/Writer pattern** for parsing and serializing configuration files
-- **Comprehensive error handling** with detailed validation and error accumulation
-- **Value types** for IP addresses (CIDR), endpoints (WireguardEndpoint)
-- **Dual API** - `Read()`/`TryRead()` patterns for both throwing and non-throwing scenarios
-- **Case-insensitive** property parsing
-- **Comment support** - Strips both full-line and inline comments during parsing
-- **Async/await support** - All I/O operations have async counterparts
-- **AmneziaWG support** - Optional extension package for AmneziaWG obfuscation parameters
+- Strongly typed models for `[Interface]` and `[Peer]` sections.
+- Reader and writer classes with sync and async APIs.
+- Validation that collects multiple errors at once.
+- Case insensitive property parsing and `#` comment stripping.
+- Value types for CIDR addresses and WireGuard endpoints.
+- Optional AmneziaWG extension with header range parsing.
 
 ## Installation
-
-### WgConf (Standard WireGuard)
 
 ```bash
 dotnet add package WgConf
 ```
 
-### WgConf.Amnezia (AmneziaWG Extension)
+For AmneziaWG support:
 
 ```bash
 dotnet add package WgConf.Amnezia
@@ -35,40 +35,34 @@ dotnet add package WgConf.Amnezia
 
 ## Quick Start
 
-### Reading a WireGuard Configuration
+### Read a configuration
 
 ```csharp
 using WgConf;
 
-// Parse from string
-var config = WireguardConfiguration.Parse(configText);
-
-// Load from file
-var config = WireguardConfiguration.Load("wg0.conf");
-
-// Or use async
-var config = await WireguardConfiguration.LoadAsync("wg0.conf");
-
-// With error handling
-if (WireguardConfiguration.TryParse(configText, out var config, out var errors))
-{
-    Console.WriteLine($"Loaded {config.Peers.Count} peers");
-}
-else
-{
-    foreach (var error in errors)
-        Console.WriteLine($"Line {error.LineNumber}: {error.Message}");
-}
+var config = WireguardConfiguration.Parse(text);
 ```
 
-### Writing a WireGuard Configuration
+```csharp
+using WgConf;
+
+var config = WireguardConfiguration.Load("wg0.conf");
+```
+
+```csharp
+using WgConf;
+
+var config = await WireguardConfiguration.LoadAsync("wg0.conf");
+```
+
+### Write a configuration
 
 ```csharp
 using WgConf;
 
 var config = new WireguardConfiguration
 {
-    PrivateKey = Convert.FromBase64String("YAnz5TF+lXXJte14tji3zlMNftTLq5yJTfxLUcv7hag="),
+    PrivateKey = Convert.FromBase64String("YAnz5TF+lXXJte14tji3zlMNftqN9xFSeRCFKtheBGY="),
     ListenPort = 51820,
     Address = CIDR.Parse("10.0.0.1/24"),
 };
@@ -76,18 +70,15 @@ var config = new WireguardConfiguration
 config.Peers.Add(new WireguardPeerConfiguration
 {
     PublicKey = Convert.FromBase64String("xTIBA5rboUvnH4htodjb6e697QjLERt1NAB4mZqp8Dg="),
-    AllowedIPs = new[] { CIDR.Parse("10.0.0.2/32") },
-    Endpoint = WireguardEndpoint.Parse("example.com:51820"),
+    AllowedIPs = [CIDR.Parse("10.0.0.2/32")],
+    Endpoint = WireguardEndpoint.Parse("vpn.example.com:51820"),
+    PersistedKeepalive = 25,
 });
 
-// Save to file
 config.Save("wg0.conf");
-
-// Or use async
-await config.SaveAsync("wg0.conf");
 ```
 
-### Working with AmneziaWG
+### AmneziaWG
 
 ```csharp
 using WgConf.Amnezia;
@@ -96,15 +87,13 @@ var config = new AmneziaWgConfiguration
 {
     PrivateKey = Convert.FromBase64String("YAnz5TF+lXXJte14tji3zlMNftTLq5yJTfxLUcv7hag="),
     ListenPort = 51820,
-    Address = CIDR.Parse("10.0.0.1/24"),
+    Address = "10.0.0.1/24",
 
-    // AmneziaWG-specific obfuscation parameters
     Jc = 5,
     Jmin = 20,
     Jmax = 1000,
-    S1 = 10,
-    I1 = "custom_value",
-    H1 = IntegerRange.Parse("25-30"),
+    I1 = "custom",
+    H1 = "25-30",
 };
 
 config.Save("awg0.conf");
@@ -114,34 +103,52 @@ config.Save("awg0.conf");
 
 ### WireguardConfiguration (Interface)
 
-- `PrivateKey` - Base64-encoded private key (32 bytes)
-- `ListenPort` - UDP port (1-65535)
-- `Address` - Interface IP address and subnet (CIDR)
-- `PreUp`, `PostUp`, `PreDown`, `PostDown` - Hook commands
+- `PrivateKey` - Base64 encoded private key (32 bytes, required)
+- `ListenPort` - UDP port (1-65535, required)
+- `Address` - Interface IP address and subnet (CIDR, required)
+- `PreUp`, `PostUp`, `PreDown`, `PostDown` - Hook commands (optional)
 - `Peers` - Collection of peer configurations
 
-### WireguardPeerConfiguration
+### WireguardPeerConfiguration (Peer)
 
-- `PublicKey` - Base64-encoded public key (32 bytes)
-- `AllowedIPs` - Array of allowed IP ranges (CIDR[])
-- `Endpoint` - Optional peer endpoint (host:port)
-- `PresharedKey` - Optional pre-shared key for additional security
-- `PersistentKeepalive` - Optional keepalive interval in seconds
+- `PublicKey` - Base64 encoded public key (32 bytes, required)
+- `AllowedIPs` - Array of allowed IP ranges (CIDR[], required)
+- `Endpoint` - Optional peer endpoint (`host:port` or `[ipv6]:port`)
+- `PresharedKey` - Optional preshared key (Base64, 32 bytes)
+- `PersistedKeepalive` - Optional keepalive interval in seconds
 
-### AmneziaWgConfiguration (Extends WireguardConfiguration)
+### AmneziaWgConfiguration
 
-Adds 20 optional obfuscation parameters:
+Adds optional obfuscation parameters in `[Interface]`:
 
-- **Integers** (11): Jc, Jmin, Jmax, S1, S2, S3, S4, J1, J2, J3, Itime
-- **Strings** (5): I1, I2, I3, I4, I5
-- **Integer Ranges** (4): H1, H2, H3, H4 (format: "start-end")
+- Integers: `Jc`, `Jmin`, `Jmax`, `S1`, `S2`, `S3`, `S4`, `J1`, `J2`, `J3`, `Itime`
+- Strings: `I1`, `I2`, `I3`, `I4`, `I5`
+- Header ranges: `H1`, `H2`, `H3`, `H4` (single value like `25` or range like `25-30`)
+
+## Error Handling
+
+`Read()` and `Parse()` throw `WireguardConfigurationException` when errors are present. Use `TryParse` or `TryRead` to collect all errors without throwing.
+
+```csharp
+if (!WireguardConfiguration.TryParse(text, out var config, out var errors))
+{
+    foreach (var error in errors)
+    {
+        Console.WriteLine(error);
+    }
+}
+```
+
+## Documentation
+
+The documentation site is authored in the `docs` folder (Vitepress v2).
+
+```bash
+cd docs
+npm run dev
+```
 
 ## Testing
-
-The library includes comprehensive test coverage (117 tests):
-
-- WgConf.Tests: 81 tests
-- WgConf.Amnezia.Tests: 36 tests
 
 ```bash
 dotnet test
@@ -155,13 +162,11 @@ Coverage reports (OpenCover XML) are produced under `TestResults/<ProjectName>/c
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request.
+MIT License - see [LICENSE](LICENSE) for details.
 
 ## Related Projects
 
 - [WireGuard](https://www.wireguard.com/) - Fast, modern, secure VPN tunnel
 - [AmneziaWG](https://github.com/amnezia-vpn/amneziawg) - WireGuard with obfuscation support
+
+
