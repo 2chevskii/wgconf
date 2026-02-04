@@ -64,6 +64,11 @@ public class WireguardConfiguration
     public List<WireguardPeerConfiguration> Peers { get; } = [];
 
     /// <summary>
+    /// Interface FwMark parameter (for firewall routing)
+    /// </summary>
+    public int? FwMark { get; set; }
+
+    /// <summary>
     /// Parses a WireGuard configuration from a string.
     /// </summary>
     /// <param name="text">The configuration text to parse.</param>
