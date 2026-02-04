@@ -26,10 +26,6 @@ public class AmneziaWgConfigurationWriter(TextWriter textWriter)
             amneziaConfig.S2.Let(v => WritePropertyDirect("S2", v));
             amneziaConfig.S3.Let(v => WritePropertyDirect("S3", v));
             amneziaConfig.S4.Let(v => WritePropertyDirect("S4", v));
-            amneziaConfig.J1.Let(v => WritePropertyDirect("J1", v));
-            amneziaConfig.J2.Let(v => WritePropertyDirect("J2", v));
-            amneziaConfig.J3.Let(v => WritePropertyDirect("J3", v));
-            amneziaConfig.Itime.Let(v => WritePropertyDirect("Itime", v));
             amneziaConfig.I1.Let(v => WritePropertyDirect("I1", v));
             amneziaConfig.I2.Let(v => WritePropertyDirect("I2", v));
             amneziaConfig.I3.Let(v => WritePropertyDirect("I3", v));

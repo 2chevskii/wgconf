@@ -77,8 +77,8 @@ public class AmneziaWgConfigurationWriterTests
             PrivateKey = Convert.FromBase64String("YAnz5TF+lXXJte14tji3zlMNftTLq5yJTfxLUcv7hag="),
             ListenPort = 51820,
             Address = CIDR.Parse("10.0.0.1/24"),
-            H1 = new HeaderValue(25ul, 30ul),
-            H2 = new HeaderValue(100ul, 200ul),
+            H1 = new MagicHeader(25ul, 30ul),
+            H2 = new MagicHeader(100ul, 200ul),
         };
 
         var output = WriteToString(config);
@@ -95,8 +95,8 @@ public class AmneziaWgConfigurationWriterTests
             PrivateKey = Convert.FromBase64String("YAnz5TF+lXXJte14tji3zlMNftTLq5yJTfxLUcv7hag="),
             ListenPort = 51820,
             Address = CIDR.Parse("10.0.0.1/24"),
-            H1 = new HeaderValue(25ul),
-            H2 = new HeaderValue(100ul),
+            H1 = new MagicHeader(25ul),
+            H2 = new MagicHeader(100ul),
         };
 
         var output = WriteToString(config);
@@ -115,10 +115,10 @@ public class AmneziaWgConfigurationWriterTests
             PrivateKey = Convert.FromBase64String("YAnz5TF+lXXJte14tji3zlMNftTLq5yJTfxLUcv7hag="),
             ListenPort = 51820,
             Address = CIDR.Parse("10.0.0.1/24"),
-            H1 = new HeaderValue(25ul),
-            H2 = new HeaderValue(100ul, 200ul),
-            H3 = new HeaderValue(5ul),
-            H4 = new HeaderValue(1000ul, 2000ul),
+            H1 = new MagicHeader(25ul),
+            H2 = new MagicHeader(100ul, 200ul),
+            H3 = new MagicHeader(5ul),
+            H4 = new MagicHeader(1000ul, 2000ul),
         };
 
         var output = WriteToString(config);
@@ -144,19 +144,15 @@ public class AmneziaWgConfigurationWriterTests
             S2 = 20,
             S3 = 30,
             S4 = 40,
-            J1 = 1,
-            J2 = 2,
-            J3 = 3,
-            Itime = 100,
             I1 = "val1",
             I2 = "val2",
             I3 = "val3",
             I4 = "val4",
             I5 = "val5",
-            H1 = new HeaderValue(25ul, 30ul),
-            H2 = new HeaderValue(100ul, 200ul),
-            H3 = new HeaderValue(5ul, 10ul),
-            H4 = new HeaderValue(1000ul, 2000ul),
+            H1 = new MagicHeader(25ul, 30ul),
+            H2 = new MagicHeader(100ul, 200ul),
+            H3 = new MagicHeader(5ul, 10ul),
+            H4 = new MagicHeader(1000ul, 2000ul),
         };
 
         var output = WriteToString(config);
@@ -225,7 +221,7 @@ public class AmneziaWgConfigurationWriterTests
             Jc = 5,
             Jmin = 20,
             I1 = "test",
-            H1 = new HeaderValue(25ul, 30ul),
+            H1 = new MagicHeader(25ul, 30ul),
         };
         original.Peers.Add(
             new WireguardPeerConfiguration

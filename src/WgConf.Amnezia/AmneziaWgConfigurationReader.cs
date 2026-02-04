@@ -143,45 +143,6 @@ public class AmneziaWgConfigurationReader(TextReader textReader)
             errors.Add(new ParseError(0, $"Invalid S4 format. Expected integer value."));
         }
 
-        if (interfaceProps.TryGetValue("J1", out var j1) && int.TryParse(j1, out var j1Value))
-        {
-            amneziaConfig.J1 = j1Value;
-        }
-        else if (interfaceProps.ContainsKey("J1"))
-        {
-            errors.Add(new ParseError(0, $"Invalid J1 format. Expected integer value."));
-        }
-
-        if (interfaceProps.TryGetValue("J2", out var j2) && int.TryParse(j2, out var j2Value))
-        {
-            amneziaConfig.J2 = j2Value;
-        }
-        else if (interfaceProps.ContainsKey("J2"))
-        {
-            errors.Add(new ParseError(0, $"Invalid J2 format. Expected integer value."));
-        }
-
-        if (interfaceProps.TryGetValue("J3", out var j3) && int.TryParse(j3, out var j3Value))
-        {
-            amneziaConfig.J3 = j3Value;
-        }
-        else if (interfaceProps.ContainsKey("J3"))
-        {
-            errors.Add(new ParseError(0, $"Invalid J3 format. Expected integer value."));
-        }
-
-        if (
-            interfaceProps.TryGetValue("Itime", out var itime)
-            && int.TryParse(itime, out var itimeValue)
-        )
-        {
-            amneziaConfig.Itime = itimeValue;
-        }
-        else if (interfaceProps.ContainsKey("Itime"))
-        {
-            errors.Add(new ParseError(0, $"Invalid Itime format. Expected integer value."));
-        }
-
         if (interfaceProps.TryGetValue("I1", out var i1))
         {
             amneziaConfig.I1 = i1;
@@ -209,7 +170,7 @@ public class AmneziaWgConfigurationReader(TextReader textReader)
 
         if (
             interfaceProps.TryGetValue("H1", out var h1)
-            && HeaderValue.TryParse(h1, out var h1Value)
+            && MagicHeader.TryParse(h1, out var h1Value)
         )
         {
             amneziaConfig.H1 = h1Value;
@@ -221,7 +182,7 @@ public class AmneziaWgConfigurationReader(TextReader textReader)
 
         if (
             interfaceProps.TryGetValue("H2", out var h2)
-            && HeaderValue.TryParse(h2, out var h2Value)
+            && MagicHeader.TryParse(h2, out var h2Value)
         )
         {
             amneziaConfig.H2 = h2Value;
@@ -233,7 +194,7 @@ public class AmneziaWgConfigurationReader(TextReader textReader)
 
         if (
             interfaceProps.TryGetValue("H3", out var h3)
-            && HeaderValue.TryParse(h3, out var h3Value)
+            && MagicHeader.TryParse(h3, out var h3Value)
         )
         {
             amneziaConfig.H3 = h3Value;
@@ -245,7 +206,7 @@ public class AmneziaWgConfigurationReader(TextReader textReader)
 
         if (
             interfaceProps.TryGetValue("H4", out var h4)
-            && HeaderValue.TryParse(h4, out var h4Value)
+            && MagicHeader.TryParse(h4, out var h4Value)
         )
         {
             amneziaConfig.H4 = h4Value;

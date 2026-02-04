@@ -3,62 +3,42 @@ namespace WgConf.Amnezia;
 /// <summary>
 /// Represents an Amnezia WireGuard configuration.
 /// </summary>
-public class AmneziaWgConfiguration : WireguardConfiguration
+public sealed class AmneziaWgConfiguration : WireguardConfiguration
 {
     /// <summary>
-    /// Gets or sets the Jc parameter.
+    /// Junk packet count
     /// </summary>
     public int? Jc { get; set; }
 
     /// <summary>
-    /// Gets or sets the Jmin parameter.
+    /// Junk packet min size
     /// </summary>
     public int? Jmin { get; set; }
 
     /// <summary>
-    /// Gets or sets the Jmax parameter.
+    /// Junk packet max size
     /// </summary>
     public int? Jmax { get; set; }
 
     /// <summary>
-    /// Gets or sets the S1 parameter.
+    /// Init packet junk size
     /// </summary>
     public int? S1 { get; set; }
 
     /// <summary>
-    /// Gets or sets the S2 parameter.
+    /// Response packet junk size
     /// </summary>
     public int? S2 { get; set; }
 
     /// <summary>
-    /// Gets or sets the S3 parameter.
+    /// Cookie reply packet junk size
     /// </summary>
     public int? S3 { get; set; }
 
     /// <summary>
-    /// Gets or sets the S4 parameter.
+    /// Transport packet junk size
     /// </summary>
     public int? S4 { get; set; }
-
-    /// <summary>
-    /// Gets or sets the J1 parameter.
-    /// </summary>
-    public int? J1 { get; set; }
-
-    /// <summary>
-    /// Gets or sets the J2 parameter.
-    /// </summary>
-    public int? J2 { get; set; }
-
-    /// <summary>
-    /// Gets or sets the J3 parameter.
-    /// </summary>
-    public int? J3 { get; set; }
-
-    /// <summary>
-    /// Gets or sets the Itime parameter.
-    /// </summary>
-    public int? Itime { get; set; }
 
     /// <summary>
     /// Gets or sets the I1 parameter.
@@ -86,24 +66,24 @@ public class AmneziaWgConfiguration : WireguardConfiguration
     public string? I5 { get; set; }
 
     /// <summary>
-    /// Gets or sets the H1 header value.
+    /// Init packet magic header
     /// </summary>
-    public HeaderValue? H1 { get; set; }
+    public MagicHeader? H1 { get; set; }
 
     /// <summary>
-    /// Gets or sets the H2 header value.
+    /// Response packet magic header
     /// </summary>
-    public HeaderValue? H2 { get; set; }
+    public MagicHeader? H2 { get; set; }
 
     /// <summary>
-    /// Gets or sets the H3 header value.
+    /// Underload packet magic header
     /// </summary>
-    public HeaderValue? H3 { get; set; }
+    public MagicHeader? H3 { get; set; }
 
     /// <summary>
-    /// Gets or sets the H4 header value.
+    /// Transport packet magic header
     /// </summary>
-    public HeaderValue? H4 { get; set; }
+    public MagicHeader? H4 { get; set; }
 
     /// <summary>
     /// Parses an Amnezia WireGuard configuration from a string.
