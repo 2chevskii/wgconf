@@ -40,10 +40,6 @@ public class AmneziaWgConfigurationReaderInvalidPropertiesTests
         Assert.Contains(errors, e => e.Message.Contains("S2"));
         Assert.Contains(errors, e => e.Message.Contains("S3"));
         Assert.Contains(errors, e => e.Message.Contains("S4"));
-        Assert.Contains(errors, e => e.Message.Contains("J1"));
-        Assert.Contains(errors, e => e.Message.Contains("J2"));
-        Assert.Contains(errors, e => e.Message.Contains("J3"));
-        Assert.Contains(errors, e => e.Message.Contains("Itime"));
         Assert.Contains(errors, e => e.Message.Contains("H2"));
         Assert.Contains(errors, e => e.Message.Contains("H3"));
         Assert.Contains(errors, e => e.Message.Contains("H4"));

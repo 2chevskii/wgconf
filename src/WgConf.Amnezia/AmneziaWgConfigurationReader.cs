@@ -143,45 +143,6 @@ public class AmneziaWgConfigurationReader(TextReader textReader)
             errors.Add(new ParseError(0, $"Invalid S4 format. Expected integer value."));
         }
 
-        if (interfaceProps.TryGetValue("J1", out var j1) && int.TryParse(j1, out var j1Value))
-        {
-            amneziaConfig.J1 = j1Value;
-        }
-        else if (interfaceProps.ContainsKey("J1"))
-        {
-            errors.Add(new ParseError(0, $"Invalid J1 format. Expected integer value."));
-        }
-
-        if (interfaceProps.TryGetValue("J2", out var j2) && int.TryParse(j2, out var j2Value))
-        {
-            amneziaConfig.J2 = j2Value;
-        }
-        else if (interfaceProps.ContainsKey("J2"))
-        {
-            errors.Add(new ParseError(0, $"Invalid J2 format. Expected integer value."));
-        }
-
-        if (interfaceProps.TryGetValue("J3", out var j3) && int.TryParse(j3, out var j3Value))
-        {
-            amneziaConfig.J3 = j3Value;
-        }
-        else if (interfaceProps.ContainsKey("J3"))
-        {
-            errors.Add(new ParseError(0, $"Invalid J3 format. Expected integer value."));
-        }
-
-        if (
-            interfaceProps.TryGetValue("Itime", out var itime)
-            && int.TryParse(itime, out var itimeValue)
-        )
-        {
-            amneziaConfig.Itime = itimeValue;
-        }
-        else if (interfaceProps.ContainsKey("Itime"))
-        {
-            errors.Add(new ParseError(0, $"Invalid Itime format. Expected integer value."));
-        }
-
         if (interfaceProps.TryGetValue("I1", out var i1))
         {
             amneziaConfig.I1 = i1;

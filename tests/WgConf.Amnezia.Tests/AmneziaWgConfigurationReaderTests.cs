@@ -64,10 +64,6 @@ AllowedIPs = 10.0.0.2/32";
         Assert.Equal(20, result.S2);
         Assert.Equal(30, result.S3);
         Assert.Equal(40, result.S4);
-        Assert.Equal(1, result.J1);
-        Assert.Equal(2, result.J2);
-        Assert.Equal(3, result.J3);
-        Assert.Equal(100, result.Itime);
     }
 
     [Fact]
