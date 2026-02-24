@@ -41,26 +41,6 @@ public class AmneziaWgConfiguration : WireguardConfiguration
     public int? S4 { get; set; }
 
     /// <summary>
-    /// Gets or sets the J1 parameter.
-    /// </summary>
-    public int? J1 { get; set; }
-
-    /// <summary>
-    /// Gets or sets the J2 parameter.
-    /// </summary>
-    public int? J2 { get; set; }
-
-    /// <summary>
-    /// Gets or sets the J3 parameter.
-    /// </summary>
-    public int? J3 { get; set; }
-
-    /// <summary>
-    /// Gets or sets the Itime parameter.
-    /// </summary>
-    public int? Itime { get; set; }
-
-    /// <summary>
     /// Gets or sets the I1 parameter.
     /// </summary>
     public string? I1 { get; set; }

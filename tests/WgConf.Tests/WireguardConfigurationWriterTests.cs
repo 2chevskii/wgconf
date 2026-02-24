@@ -290,6 +290,7 @@ public class WireguardConfigurationWriterTests
     private static string WriteConfiguration(WireguardConfiguration config)
     {
         using var stringWriter = new StringWriter();
+        stringWriter.NewLine = "\n";
         using var writer = new WireguardConfigurationWriter(stringWriter);
         writer.Write(config);
         return stringWriter.ToString();
