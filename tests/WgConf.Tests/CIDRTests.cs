@@ -99,11 +99,7 @@ public class CIDRTests
     [Fact]
     public void ToString_IPv6_UsesShorthandNotation()
     {
-        var cidr = new CIDR
-        {
-            Address = IPAddress.Parse("2001:0db8:0000:0000:0000:0000:0000:0001"),
-            PrefixLength = 64,
-        };
+        var cidr = new CIDR(IPAddress.Parse("2001:0db8:0000:0000:0000:0000:0000:0001"), 64);
 
         Assert.Equal("2001:db8::1/64", cidr.ToString());
     }
