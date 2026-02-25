@@ -1,4 +1,5 @@
 using System.Net;
+using System.Net.Sockets;
 using WgConf.Extensions;
 
 namespace WgConf;
@@ -11,19 +12,74 @@ public readonly struct CIDR
     /// <summary>
     /// Gets the IP address portion of the CIDR.
     /// </summary>
-    public required IPAddress Address { get; init; }
+    public readonly IPAddress Address;
 
     /// <summary>
     /// Gets the prefix length portion of the CIDR.
     /// </summary>
-    public required int PrefixLength { get; init; }
+    public readonly int PrefixLength;
 
-    // public static implicit operator CIDR(string input) => Parse(input);
+    /// <summary>
+    /// Initializes a new instance of <see cref="CIDR"/> type
+    /// </summary>
+    /// <param name="address"></param>
+    /// <param name="prefixLength"></param>
+    /// <exception cref="ArgumentOutOfRangeException"></exception>
+    public CIDR(IPAddress address, int prefixLength = 0)
+    {
+        if (
+            address.AddressFamily
+            is not AddressFamily.InterNetwork
+                and not AddressFamily.InterNetworkV6
+        )
+        {
+            throw new ArgumentOutOfRangeException(
+                nameof(address),
+                "Only IPv4 and IPv6 AddressFamily is supported"
+            );
+        }
+
+        if (PrefixLength < 0)
+        {
+            throw new ArgumentOutOfRangeException(
+                nameof(prefixLength),
+                "Prefix length cannot be less than zero"
+            );
+        }
+
+        if (address.AddressFamily == AddressFamily.InterNetwork && PrefixLength > 32)
+        {
+            throw new ArgumentOutOfRangeException(
+                nameof(prefixLength),
+                "Prefix length for IPv4 address cannot be greater than 32"
+            );
+        }
+
+        if (address.AddressFamily == AddressFamily.InterNetworkV6 && prefixLength > 128)
+        {
+            throw new ArgumentOutOfRangeException(
+                nameof(prefixLength),
+                "Prefix length for IPv6 address cannot be greater than 128"
+            );
+        }
+
+        Address = address;
+        PrefixLength = prefixLength;
+    }
+
     /// <summary>
     /// Parses a CIDR value from a character span.
     /// </summary>
     /// <param name="input">The input in <c>address/prefix</c> format.</param>
     public static implicit operator CIDR(ReadOnlySpan<char> input) => Parse(input);
+
+    /// <summary>
+    /// Converts given tuple into CIDR
+    /// </summary>
+    /// <param name="tuple"></param>
+    /// <returns></returns>
+    public static implicit operator CIDR(ValueTuple<IPAddress, int> tuple) =>
+        new CIDR(tuple.Item1, tuple.Item2);
 
     /// <summary>
     /// Attempts to parse a CIDR value from a character span.
@@ -100,7 +156,7 @@ public readonly struct CIDR
             return;
         }
 
-        result = new CIDR { Address = address, PrefixLength = prefixLength };
+        result = new CIDR(address, prefixLength);
     }
 
     /// <summary>
