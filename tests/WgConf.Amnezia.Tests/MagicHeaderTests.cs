@@ -1,5 +1,4 @@
-using WgConf.Amnezia;
-using Xunit;
+using FluentAssertions;
 
 namespace WgConf.Amnezia.Tests;
 
@@ -20,7 +19,7 @@ public class MagicHeaderTests
         var range = MagicHeader.Parse("25");
 
         Assert.Equal(25ul, range.Start);
-        Assert.Null(range.End);
+        range.IsRange.Should().BeFalse();
     }
 
     [Fact]
@@ -35,13 +34,13 @@ public class MagicHeaderTests
         var range = MagicHeader.Parse("  42  ");
 
         Assert.Equal(42ul, range.Start);
-        Assert.Null(range.End);
+        range.IsRange.Should().BeFalse();
     }
 
     [Fact]
-    public void Parse_SameStartEnd_ThrowsArgumentException()
+    public void Parse_SameStartEnd_ShouldNotThrow()
     {
-        Assert.Throws<ArgumentException>(() => MagicHeader.Parse("5-5"));
+        FluentActions.Invoking(() => MagicHeader.Parse("5-5")).Should().NotThrow();
     }
 
     [Fact]
@@ -59,19 +58,19 @@ public class MagicHeaderTests
     [Fact]
     public void Parse_LargeNumbers_Parses()
     {
-        var range = MagicHeader.Parse("1000000-2000000");
+        var magicHeader = MagicHeader.Parse("1000000-2000000");
 
-        Assert.Equal(1000000ul, range.Start);
-        Assert.Equal(2000000ul, range.End);
+        Assert.Equal(1000000ul, magicHeader.Start);
+        Assert.Equal(2000000ul, magicHeader.End);
     }
 
     [Fact]
     public void Parse_WithWhitespace_Parses()
     {
-        var range = MagicHeader.Parse(" 10 - 20 ");
+        var magicHeader = MagicHeader.Parse(" 10 - 20 ");
 
-        Assert.Equal(10ul, range.Start);
-        Assert.Equal(20ul, range.End);
+        Assert.Equal(10ul, magicHeader.Start);
+        Assert.Equal(20ul, magicHeader.End);
     }
 
     [Fact]
@@ -101,62 +100,62 @@ public class MagicHeaderTests
     [Fact]
     public void TryParse_ValidRange_ReturnsTrue()
     {
-        var success = MagicHeader.TryParse("25-30", out var range);
+        var success = MagicHeader.TryParse("25-30", out var magicHeader);
 
         Assert.True(success);
-        Assert.Equal(25ul, range.Start);
-        Assert.Equal(30ul, range.End);
+        Assert.Equal(25ul, magicHeader.Start);
+        Assert.Equal(30ul, magicHeader.End);
     }
 
     [Fact]
     public void TryParse_ValidSingleValue_ReturnsTrue()
     {
-        var success = MagicHeader.TryParse("42", out var range);
+        var success = MagicHeader.TryParse("42", out var magicHeader);
 
         Assert.True(success);
-        Assert.Equal(42ul, range.Start);
-        Assert.Null(range.End);
+        Assert.Equal(42ul, magicHeader.Start);
+        magicHeader.IsRange.Should().BeFalse();
     }
 
     [Fact]
     public void TryParse_InvalidFormat_ReturnsFalse()
     {
-        var success = MagicHeader.TryParse("invalid", out var range);
+        var success = MagicHeader.TryParse("invalid", out var magicHeader);
 
         Assert.False(success);
-        Assert.Equal(default, range);
+        Assert.Equal(default, magicHeader);
     }
 
     [Fact]
     public void ToString_ReturnsCorrectFormat()
     {
-        MagicHeader range = [25ul, 30ul];
+        MagicHeader magicHeader = [25u, 30u];
 
-        Assert.Equal("25-30", range.ToString());
+        Assert.Equal("25-30", magicHeader.ToString());
     }
 
     [Fact]
     public void ToString_SingleValue_ReturnsCorrectFormat()
     {
-        MagicHeader range = 25ul;
+        MagicHeader magicHeader = 25u;
 
-        Assert.Equal("25", range.ToString());
+        Assert.Equal("25", magicHeader.ToString());
     }
 
     [Fact]
     public void ToString_SingleValue_FromConstructor_ReturnsCorrectFormat()
     {
-        var range = new MagicHeader(10ul);
+        var magicHeader = new MagicHeader(10u);
 
-        Assert.Equal("10", range.ToString());
+        Assert.Equal("10", magicHeader.ToString());
     }
 
     [Fact]
     public void RoundTrip_ParseAndToString()
     {
         var original = "100-200";
-        var range = MagicHeader.Parse(original);
-        var result = range.ToString();
+        var magicHeader = MagicHeader.Parse(original);
+        var result = magicHeader.ToString();
 
         Assert.Equal(original, result);
     }
@@ -165,8 +164,8 @@ public class MagicHeaderTests
     public void RoundTrip_SingleValue()
     {
         var original = "100";
-        var range = MagicHeader.Parse(original);
-        var result = range.ToString();
+        var magicHeader = MagicHeader.Parse(original);
+        var result = magicHeader.ToString();
 
         Assert.Equal(original, result);
     }
