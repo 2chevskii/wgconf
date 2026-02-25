@@ -12,46 +12,20 @@ public readonly struct HeaderValue
     /// <summary>
     /// The start value of the header or range.
     /// </summary>
-    public readonly ulong Start;
+    public readonly uint Start;
 
     /// <summary>
     /// The optional end value of the header range.
     /// </summary>
-    public readonly ulong? End;
+    public readonly uint End;
 
-    /// <summary>
-    /// Initializes a single-value header with the specified start value.
-    /// </summary>
-    /// <param name="start">The header value.</param>
-    public HeaderValue(ulong start)
+    public bool IsRange => Start != End;
+
+    public HeaderValue(uint start, uint end)
     {
-        Start = start;
-    }
-
-    /// <summary>
-    /// Initializes a header range with inclusive start and end values.
-    /// </summary>
-    /// <param name="start">The start value.</param>
-    /// <param name="end">The end value.</param>
-    /// <exception cref="ArgumentException">
-    /// Thrown when <paramref name="end"/> equals <paramref name="start"/> or is less than it.
-    /// </exception>
-    public HeaderValue(ulong start, ulong end)
-    {
-        if (end == start)
-        {
-            throw new ArgumentException(
-                $"Use constructor with single parameter to initialize a single-value {nameof(HeaderValue)}",
-                nameof(start)
-            );
-        }
-
         if (end < start)
         {
-            throw new ArgumentException(
-                $"{nameof(end)} cannot be less than {nameof(start)}",
-                nameof(end)
-            );
+            throw new ArgumentException("End cannot be less than Start", nameof(end));
         }
 
         Start = start;
@@ -59,11 +33,18 @@ public readonly struct HeaderValue
     }
 
     /// <summary>
+    /// Initializes a single-value header with the specified start value.
+    /// </summary>
+    /// <param name="value">The header value (Start == End).</param>
+    public HeaderValue(uint value)
+        : this(value, value) { }
+
+    /// <summary>
     /// Creates a header range from a two-element span.
     /// </summary>
     /// <param name="range">A span containing the start and end values.</param>
     /// <returns>The created header value.</returns>
-    public static HeaderValue Create(ReadOnlySpan<ulong> range)
+    public static HeaderValue Create(ReadOnlySpan<uint> range)
     {
         return new HeaderValue(range[0], range[1]);
     }
@@ -72,13 +53,13 @@ public readonly struct HeaderValue
     /// Creates a single-value header from an unsigned long.
     /// </summary>
     /// <param name="start">The header value.</param>
-    public static implicit operator HeaderValue(ulong start) => new HeaderValue(start);
+    public static implicit operator HeaderValue(uint start) => new HeaderValue(start);
 
     /// <summary>
     /// Creates a header range from a tuple.
     /// </summary>
     /// <param name="range">The tuple containing start and end values.</param>
-    public static implicit operator HeaderValue(ValueTuple<ulong, ulong> range) =>
+    public static implicit operator HeaderValue(ValueTuple<uint, uint> range) =>
         new HeaderValue(range.Item1, range.Item2);
 
     /// <summary>
@@ -137,7 +118,7 @@ public readonly struct HeaderValue
 
         if (dashIndex == -1)
         {
-            if (!ulong.TryParse(input, out ulong start))
+            if (!uint.TryParse(input, out uint start))
             {
                 exception = new FormatException($"Invalid integer value in HeaderValue: '{input}'");
             }
@@ -156,13 +137,13 @@ public readonly struct HeaderValue
             return;
         }
 
-        if (!ulong.TryParse(input[partRanges[0]], out ulong start1))
+        if (!uint.TryParse(input[partRanges[0]], out uint start1))
         {
             exception = new FormatException("Could not parse the first part of HeaderValue");
             return;
         }
 
-        if (!ulong.TryParse(input[partRanges[1]], out ulong end))
+        if (!uint.TryParse(input[partRanges[1]], out uint end))
         {
             exception = new FormatException("Could not parse the second part of HeaderValue");
             return;
@@ -175,13 +156,13 @@ public readonly struct HeaderValue
     /// Returns an enumerator for the header values.
     /// </summary>
     /// <returns>An enumerator over the header values.</returns>
-    public IEnumerator<ulong> GetEnumerator()
+    public IEnumerator<uint> GetEnumerator()
     {
-        List<ulong> list = [Start];
-        if (End.HasValue)
-            list.Add(End.Value);
+        var enumerable = Enumerable.Empty<uint>().Append(Start);
+        if (IsRange)
+            enumerable = enumerable.Append(End);
 
-        return list.GetEnumerator();
+        return enumerable.GetEnumerator();
     }
 
     /// <summary>
@@ -190,6 +171,6 @@ public readonly struct HeaderValue
     /// <returns>The formatted header value.</returns>
     public override string ToString()
     {
-        return End.HasValue ? $"{Start}-{End.Value}" : Start.ToString();
+        return IsRange ? $"{Start}-{End}" : Start.ToString();
     }
 }
