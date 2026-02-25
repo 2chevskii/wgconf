@@ -39,6 +39,11 @@ public class WireguardConfiguration
     public required CIDR Address { get; set; }
 
     /// <summary>
+    /// Firewall mark
+    /// </summary>
+    public int FwMark { get; set; }
+
+    /// <summary>
     /// Gets or sets the command executed before the interface is brought up.
     /// </summary>
     public string? PreUp { get; set; }
