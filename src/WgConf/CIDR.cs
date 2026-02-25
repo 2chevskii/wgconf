@@ -1,4 +1,5 @@
 using System.Net;
+using System.Net.Sockets;
 using WgConf.Extensions;
 
 namespace WgConf;
@@ -11,12 +12,54 @@ public readonly struct CIDR
     /// <summary>
     /// Gets the IP address portion of the CIDR.
     /// </summary>
-    public required IPAddress Address { get; init; }
+    public readonly IPAddress Address;
 
     /// <summary>
     /// Gets the prefix length portion of the CIDR.
     /// </summary>
-    public required int PrefixLength { get; init; }
+    public readonly int PrefixLength;
+
+    public CIDR(IPAddress address, int prefixLength = 0)
+    {
+        if (
+            address.AddressFamily
+            is not AddressFamily.InterNetwork
+                and not AddressFamily.InterNetworkV6
+        )
+        {
+            throw new ArgumentOutOfRangeException(
+                nameof(address),
+                "Only IPv4 and IPv6 AddressFamily is supported"
+            );
+        }
+
+        if (PrefixLength < 0)
+        {
+            throw new ArgumentOutOfRangeException(
+                nameof(prefixLength),
+                "Prefix length cannot be less than zero"
+            );
+        }
+
+        if (address.AddressFamily == AddressFamily.InterNetwork && PrefixLength > 32)
+        {
+            throw new ArgumentOutOfRangeException(
+                nameof(prefixLength),
+                "Prefix length for IPv4 address cannot be greater than 32"
+            );
+        }
+
+        if (address.AddressFamily == AddressFamily.InterNetworkV6 && prefixLength > 64)
+        {
+            throw new ArgumentOutOfRangeException(
+                nameof(prefixLength),
+                "Prefix length for IPv6 address cannot be greater than 64"
+            );
+        }
+
+        Address = address;
+        PrefixLength = prefixLength;
+    }
 
     // public static implicit operator CIDR(string input) => Parse(input);
     /// <summary>
