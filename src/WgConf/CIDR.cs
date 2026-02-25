@@ -68,6 +68,9 @@ public readonly struct CIDR
     /// <param name="input">The input in <c>address/prefix</c> format.</param>
     public static implicit operator CIDR(ReadOnlySpan<char> input) => Parse(input);
 
+    public static implicit operator CIDR(ValueTuple<IPAddress, int> tuple) =>
+        new CIDR(tuple.Item1, tuple.Item2);
+
     /// <summary>
     /// Attempts to parse a CIDR value from a character span.
     /// </summary>
