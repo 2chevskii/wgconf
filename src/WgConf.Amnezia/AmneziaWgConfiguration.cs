@@ -68,22 +68,22 @@ public class AmneziaWgConfiguration : WireguardConfiguration
     /// <summary>
     /// Gets or sets the H1 header value.
     /// </summary>
-    public HeaderValue? H1 { get; set; }
+    public MagicHeader? H1 { get; set; }
 
     /// <summary>
     /// Gets or sets the H2 header value.
     /// </summary>
-    public HeaderValue? H2 { get; set; }
+    public MagicHeader? H2 { get; set; }
 
     /// <summary>
     /// Gets or sets the H3 header value.
     /// </summary>
-    public HeaderValue? H3 { get; set; }
+    public MagicHeader? H3 { get; set; }
 
     /// <summary>
     /// Gets or sets the H4 header value.
     /// </summary>
-    public HeaderValue? H4 { get; set; }
+    public MagicHeader? H4 { get; set; }
 
     /// <summary>
     /// Parses an Amnezia WireGuard configuration from a string.

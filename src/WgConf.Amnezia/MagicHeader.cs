@@ -6,8 +6,8 @@ namespace WgConf.Amnezia;
 /// <summary>
 /// Represents a single header value or a range of header values.
 /// </summary>
-[CollectionBuilder(typeof(HeaderValue), nameof(Create))]
-public readonly struct HeaderValue
+[CollectionBuilder(typeof(MagicHeader), nameof(Create))]
+public readonly struct MagicHeader
 {
     /// <summary>
     /// The start value of the header or range.
@@ -21,7 +21,7 @@ public readonly struct HeaderValue
 
     public bool IsRange => Start != End;
 
-    public HeaderValue(uint start, uint end)
+    public MagicHeader(uint start, uint end)
     {
         if (end < start)
         {
@@ -36,7 +36,7 @@ public readonly struct HeaderValue
     /// Initializes a single-value header with the specified start value.
     /// </summary>
     /// <param name="value">The header value (Start == End).</param>
-    public HeaderValue(uint value)
+    public MagicHeader(uint value)
         : this(value, value) { }
 
     /// <summary>
@@ -44,42 +44,42 @@ public readonly struct HeaderValue
     /// </summary>
     /// <param name="range">A span containing the start and end values.</param>
     /// <returns>The created header value.</returns>
-    public static HeaderValue Create(ReadOnlySpan<uint> range)
+    public static MagicHeader Create(ReadOnlySpan<uint> range)
     {
-        return new HeaderValue(range[0], range[1]);
+        return new MagicHeader(range[0], range[1]);
     }
 
     /// <summary>
     /// Creates a single-value header from an unsigned long.
     /// </summary>
     /// <param name="start">The header value.</param>
-    public static implicit operator HeaderValue(uint start) => new HeaderValue(start);
+    public static implicit operator MagicHeader(uint start) => new MagicHeader(start);
 
     /// <summary>
     /// Creates a header range from a tuple.
     /// </summary>
     /// <param name="range">The tuple containing start and end values.</param>
-    public static implicit operator HeaderValue(ValueTuple<uint, uint> range) =>
-        new HeaderValue(range.Item1, range.Item2);
+    public static implicit operator MagicHeader(ValueTuple<uint, uint> range) =>
+        new MagicHeader(range.Item1, range.Item2);
 
     /// <summary>
     /// Parses a header value from a string.
     /// </summary>
     /// <param name="input">The input value.</param>
-    public static implicit operator HeaderValue(string input) => Parse(input);
+    public static implicit operator MagicHeader(string input) => Parse(input);
 
     /// <summary>
     /// Attempts to parse a header value from a character span.
     /// </summary>
     /// <param name="input">The input value.</param>
-    /// <param name="headerValue">The parsed header value when successful.</param>
+    /// <param name="magicHeader">The parsed header value when successful.</param>
     /// <returns><see langword="true"/> when parsing succeeds; otherwise <see langword="false"/>.</returns>
-    public static bool TryParse(ReadOnlySpan<char> input, out HeaderValue headerValue)
+    public static bool TryParse(ReadOnlySpan<char> input, out MagicHeader magicHeader)
     {
         Exception? exception = null;
-        headerValue = default;
+        magicHeader = default;
 
-        ParseInternal(input, ref headerValue, ref exception);
+        ParseInternal(input, ref magicHeader, ref exception);
         return exception == null;
     }
 
@@ -89,9 +89,9 @@ public readonly struct HeaderValue
     /// <param name="input">The input value.</param>
     /// <returns>The parsed header value.</returns>
     /// <exception cref="FormatException">Thrown when the input is invalid.</exception>
-    public static HeaderValue Parse(ReadOnlySpan<char> input)
+    public static MagicHeader Parse(ReadOnlySpan<char> input)
     {
-        HeaderValue result = default;
+        MagicHeader result = default;
         Exception? exception = null;
 
         ParseInternal(input, ref result, ref exception);
@@ -109,7 +109,7 @@ public readonly struct HeaderValue
     /// <param name="exception">The parsing exception when unsuccessful.</param>
     private static void ParseInternal(
         ReadOnlySpan<char> input,
-        ref HeaderValue result,
+        ref MagicHeader result,
         ref Exception? exception
     )
     {
