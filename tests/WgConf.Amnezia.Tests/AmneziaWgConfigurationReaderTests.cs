@@ -1,3 +1,4 @@
+using FluentAssertions;
 using WgConf.Amnezia;
 using Xunit;
 
@@ -153,19 +154,19 @@ AllowedIPs = 10.0.0.2/32";
 
         Assert.NotNull(result.H1);
         Assert.Equal(25ul, result.H1.Value.Start);
-        Assert.Null(result.H1.Value.End);
+        result.H1.Value.IsRange.Should().BeFalse();
 
         Assert.NotNull(result.H2);
         Assert.Equal(100ul, result.H2.Value.Start);
-        Assert.Null(result.H2.Value.End);
+        result.H2.Value.IsRange.Should().BeFalse();
 
         Assert.NotNull(result.H3);
         Assert.Equal(5ul, result.H3.Value.Start);
-        Assert.Null(result.H3.Value.End);
+        result.H3.Value.IsRange.Should().BeFalse();
 
         Assert.NotNull(result.H4);
         Assert.Equal(1000ul, result.H4.Value.Start);
-        Assert.Null(result.H4.Value.End);
+        result.H4.Value.IsRange.Should().BeFalse();
     }
 
     [Fact]
@@ -190,7 +191,7 @@ AllowedIPs = 10.0.0.2/32";
 
         Assert.NotNull(result.H1);
         Assert.Equal(25ul, result.H1.Value.Start);
-        Assert.Null(result.H1.Value.End);
+        result.H1.Value.IsRange.Should().BeFalse();
 
         Assert.NotNull(result.H2);
         Assert.Equal(100ul, result.H2.Value.Start);
@@ -198,7 +199,7 @@ AllowedIPs = 10.0.0.2/32";
 
         Assert.NotNull(result.H3);
         Assert.Equal(5ul, result.H3.Value.Start);
-        Assert.Null(result.H3.Value.End);
+        result.H3.Value.IsRange.Should().BeFalse();
 
         Assert.NotNull(result.H4);
         Assert.Equal(1000ul, result.H4.Value.Start);
