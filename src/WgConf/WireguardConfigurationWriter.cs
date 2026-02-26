@@ -55,6 +55,8 @@ public class WireguardConfigurationWriter(TextWriter textWriter) : IDisposable, 
         WriteProperty(nameof(WireguardConfiguration.PrivateKey), configuration.PrivateKey);
         WriteProperty(nameof(WireguardConfiguration.ListenPort), configuration.ListenPort);
         WriteProperty(nameof(WireguardConfiguration.Address), configuration.Address);
+        if (configuration.FwMark != 0)
+            WriteProperty(nameof(WireguardConfiguration.FwMark), configuration.FwMark);
         configuration.PreUp.Let(v => WriteProperty(nameof(WireguardConfiguration.PreUp), v));
         configuration.PostUp.Let(v => WriteProperty(nameof(WireguardConfiguration.PostUp), v));
         configuration.PreDown.Let(v => WriteProperty(nameof(WireguardConfiguration.PreDown), v));
