@@ -359,6 +359,7 @@ public class WireguardConfigurationReader(TextReader textReader) : IDisposable, 
             PrivateKey = ParsePrivateKey(interfaceProps, allLines, errors),
             ListenPort = ParseListenPort(interfaceProps, allLines, errors),
             Address = ParseAddress(interfaceProps, allLines, errors),
+            FwMark = ParseFwMark(interfaceProps, allLines, errors),
         };
 
         if (interfaceProps.TryGetValue("PreUp", out var preUp))
@@ -491,7 +492,7 @@ public class WireguardConfigurationReader(TextReader textReader) : IDisposable, 
     /// <param name="allLines">All lines from the configuration file.</param>
     /// <param name="errors">The error list to populate.</param>
     /// <returns>The parsed private key bytes.</returns>
-    private byte[] ParsePrivateKey(
+    private static byte[] ParsePrivateKey(
         Dictionary<string, string> props,
         List<string> allLines,
         List<ParseError> errors
@@ -537,7 +538,7 @@ public class WireguardConfigurationReader(TextReader textReader) : IDisposable, 
     /// <param name="allLines">All lines from the configuration file.</param>
     /// <param name="errors">The error list to populate.</param>
     /// <returns>The parsed listen port.</returns>
-    private ushort ParseListenPort(
+    private static ushort ParseListenPort(
         Dictionary<string, string> props,
         List<string> allLines,
         List<ParseError> errors
@@ -581,7 +582,7 @@ public class WireguardConfigurationReader(TextReader textReader) : IDisposable, 
     /// <param name="allLines">All lines from the configuration file.</param>
     /// <param name="errors">The error list to populate.</param>
     /// <returns>The parsed CIDR address.</returns>
-    private CIDR ParseAddress(
+    private static CIDR ParseAddress(
         Dictionary<string, string> props,
         List<string> allLines,
         List<ParseError> errors
@@ -604,6 +605,23 @@ public class WireguardConfigurationReader(TextReader textReader) : IDisposable, 
             errors.Add(new ParseError(0, $"Invalid Address format: {ex.Message}"));
             return default;
         }
+    }
+
+    private static int ParseFwMark(
+        Dictionary<string, string> interfaceProps,
+        List<string> allLines,
+        List<ParseError> errors
+    )
+    {
+        if (!interfaceProps.ContainsKey("FwMark"))
+            return 0;
+
+        if (int.TryParse(interfaceProps["FwMark"], out int value) && value >= 0)
+            return value;
+
+        errors.Add(new ParseError(0, "FwMark should be non-negative integer"));
+
+        return 0;
     }
 
     /// <summary>
@@ -739,6 +757,7 @@ public class WireguardConfigurationReader(TextReader textReader) : IDisposable, 
         return propertyName.Equals("PrivateKey", StringComparison.OrdinalIgnoreCase)
             || propertyName.Equals("ListenPort", StringComparison.OrdinalIgnoreCase)
             || propertyName.Equals("Address", StringComparison.OrdinalIgnoreCase)
+            || propertyName.Equals("FwMark", StringComparison.OrdinalIgnoreCase)
             || propertyName.Equals("PreUp", StringComparison.OrdinalIgnoreCase)
             || propertyName.Equals("PostUp", StringComparison.OrdinalIgnoreCase)
             || propertyName.Equals("PreDown", StringComparison.OrdinalIgnoreCase)

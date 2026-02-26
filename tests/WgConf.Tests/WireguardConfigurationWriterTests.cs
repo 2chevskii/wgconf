@@ -287,6 +287,38 @@ public class WireguardConfigurationWriterTests
         Assert.Contains("[Interface]", output);
     }
 
+    [Fact]
+    public void Write_FwMarkZero_NotWritten()
+    {
+        var config = new WireguardConfiguration
+        {
+            PrivateKey = Convert.FromBase64String("YAnz5TF+lXXJte14tji3zlMNftqN9xFSeRCFKtheBGY="),
+            ListenPort = 51820,
+            Address = CIDR.Parse("10.0.0.1/24"),
+            FwMark = 0,
+        };
+
+        var output = WriteConfiguration(config);
+
+        Assert.DoesNotContain("FwMark", output);
+    }
+
+    [Fact]
+    public void Write_FwMarkNonZero_Written()
+    {
+        var config = new WireguardConfiguration
+        {
+            PrivateKey = Convert.FromBase64String("YAnz5TF+lXXJte14tji3zlMNftqN9xFSeRCFKtheBGY="),
+            ListenPort = 51820,
+            Address = CIDR.Parse("10.0.0.1/24"),
+            FwMark = 51820,
+        };
+
+        var output = WriteConfiguration(config);
+
+        Assert.Contains("FwMark = 51820", output);
+    }
+
     private static string WriteConfiguration(WireguardConfiguration config)
     {
         using var stringWriter = new StringWriter();

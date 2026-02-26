@@ -431,6 +431,99 @@ public class WireguardConfigurationReaderTests
         );
     }
 
+    [Fact]
+    public void Read_FwMarkAbsent_DefaultsToZero()
+    {
+        var input = """
+            [Interface]
+            PrivateKey = YAnz5TF+lXXJte14tji3zlMNftqN9xFSeRCFKtheBGY=
+            ListenPort = 51820
+            Address = 10.0.0.1/24
+            """;
+
+        var config = ReadConfiguration(input);
+
+        Assert.Equal(0, config.FwMark);
+    }
+
+    [Fact]
+    public void Read_FwMarkPresent_ParsesCorrectly()
+    {
+        var input = """
+            [Interface]
+            PrivateKey = YAnz5TF+lXXJte14tji3zlMNftqN9xFSeRCFKtheBGY=
+            ListenPort = 51820
+            Address = 10.0.0.1/24
+            FwMark = 1234
+            """;
+
+        var config = ReadConfiguration(input);
+
+        Assert.Equal(1234, config.FwMark);
+    }
+
+    [Fact]
+    public void Read_FwMarkZero_ParsesCorrectly()
+    {
+        var input = """
+            [Interface]
+            PrivateKey = YAnz5TF+lXXJte14tji3zlMNftqN9xFSeRCFKtheBGY=
+            ListenPort = 51820
+            Address = 10.0.0.1/24
+            FwMark = 0
+            """;
+
+        var config = ReadConfiguration(input);
+
+        Assert.Equal(0, config.FwMark);
+    }
+
+    [Fact]
+    public void Read_FwMarkNegative_ThrowsWithError()
+    {
+        var input = """
+            [Interface]
+            PrivateKey = YAnz5TF+lXXJte14tji3zlMNftqN9xFSeRCFKtheBGY=
+            ListenPort = 51820
+            Address = 10.0.0.1/24
+            FwMark = -1
+            """;
+
+        var ex = Assert.Throws<WireguardConfigurationException>(() => ReadConfiguration(input));
+        Assert.Contains(ex.Errors, e => e.Message.Contains("FwMark"));
+    }
+
+    [Fact]
+    public void Read_FwMarkInvalidValue_ThrowsWithError()
+    {
+        var input = """
+            [Interface]
+            PrivateKey = YAnz5TF+lXXJte14tji3zlMNftqN9xFSeRCFKtheBGY=
+            ListenPort = 51820
+            Address = 10.0.0.1/24
+            FwMark = not-a-number
+            """;
+
+        var ex = Assert.Throws<WireguardConfigurationException>(() => ReadConfiguration(input));
+        Assert.Contains(ex.Errors, e => e.Message.Contains("FwMark"));
+    }
+
+    [Fact]
+    public void Read_FwMarkCaseInsensitive_ParsesCorrectly()
+    {
+        var input = """
+            [Interface]
+            PrivateKey = YAnz5TF+lXXJte14tji3zlMNftqN9xFSeRCFKtheBGY=
+            ListenPort = 51820
+            Address = 10.0.0.1/24
+            fwmark = 42
+            """;
+
+        var config = ReadConfiguration(input);
+
+        Assert.Equal(42, config.FwMark);
+    }
+
     private static WireguardConfiguration ReadConfiguration(string input)
     {
         using var reader = new WireguardConfigurationReader(new StringReader(input));
