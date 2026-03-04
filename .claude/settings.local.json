@@ -9,7 +9,8 @@
       "Bash(dotnet tool restore:*)",
       "Bash(cat:*)",
       "Bash(tree:*)",
-      "Bash(wc:*)"
+      "Bash(wc:*)",
+      "Bash(git:*)"
     ]
   }
 }
